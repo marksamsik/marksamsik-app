@@ -1,4 +1,33 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>마크삼식 보디빌딩 앱</title>
-<style>body{margin:0;background:#0f1215;color:#e9e4d8;font:16px/1.7 sans-serif}main{max-width:640px;margin:0 auto;padding:40px 20px}a{color:#e0a53a}</style></head>
-<body><main><h1>마크삼식 보디빌딩</h1><p>생활스포츠지도사 2급 보디빌딩 수험생을 위한 공식포털 앱입니다.</p>
-<ul><li><a href="privacy.html">개인정보처리방침</a></li></ul></main></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1215">
+<title>마크삼식의 생체 2급 보디빌딩 공식포털</title>
+<style>
+  html,body{margin:0;height:100%;background:#0f1215;overflow:hidden}
+  iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#0f1215}
+  #off{display:none;position:fixed;inset:0;color:#e9e4d8;font:16px/1.7 sans-serif;text-align:center;padding:30vh 24px 0}
+  #off button{margin-top:16px;padding:12px 22px;border:0;border-radius:10px;background:#c8352b;color:#fff;font-size:16px}
+  #pp{position:fixed;left:-9999px}
+</style>
+</head>
+<body>
+<!-- 포털(Apps Script 웹앱)을 액자처럼 끼워 넣어 상단 「구글 앱스 스크립트 사용자가 만들었습니다」 문구를 없앤 화면 -->
+<iframe id="portal" title="마크삼식의 생체 2급 보디빌딩 공식포털"
+        allow="autoplay; clipboard-write; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+<div id="off">📶 인터넷 연결을 확인해 주세요<br><button onclick="location.reload()">다시 시도</button></div>
+<a id="pp" href="privacy.html">개인정보처리방침</a>
+<script>
+  // ▼ 포털 주소 (Apps Script 「배포 관리 → ✏️ → 새 버전」으로만 배포하면 안 바뀜)
+  var PORTAL = "https://script.google.com/macros/s/AKfycbwYhsrixj_FvZCniX_xjWobQyC6EB6IXCzW_Sty-1xPbLakHMOmzRKwDKYevtE4mV6hKg/exec";
+  if (navigator.onLine === false) {
+    document.getElementById('off').style.display = 'block';
+    document.getElementById('portal').style.display = 'none';
+  } else {
+    document.getElementById('portal').src = PORTAL + (location.hash || '');
+  }
+</script>
+</body>
+</html>
