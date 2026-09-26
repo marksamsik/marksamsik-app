@@ -1,0 +1,7 @@
+*.jks
+*.keystore
+비밀값*.txt
+keystore_base64.txt
+.gradle/
+build/
+local.properties

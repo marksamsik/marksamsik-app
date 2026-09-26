@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+// 서명 정보는 GitHub 비밀값(Secrets)에서만 읽습니다. 코드에 비밀번호를 넣지 않습니다.
+def ksFile = System.getenv('KEYSTORE_FILE')
+def runNo = (System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer
+
+android {
+    namespace 'com.marksamsik.portal'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.marksamsik.portal'   // ⚠️ 스토어에 한 번 올리면 영구히 못 바꿈
+        minSdk 24
+        targetSdk 36
+        versionCode runNo                        // GitHub 빌드 번호 = 버전 코드 (자동 증가)
+        versionName "1.0." + runNo
+    }
+
+    signingConfigs {
+        release {
+            if (ksFile) {
+                storeFile file(ksFile)
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (ksFile) signingConfig signingConfigs.release
+        }
+    }
+
+    lint {
+        checkReleaseBuilds false   // 빌드 서버에서 경고 때문에 멈추지 않게
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
