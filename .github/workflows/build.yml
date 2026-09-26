@@ -15,7 +15,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
+      # GitHub 서버에는 안드로이드 SDK가 이미 깔려 있음 → 필요한 부품만 추가 설치
+      - name: 안드로이드 SDK 부품 설치
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-36" "build-tools;36.0.0" || echo "부품 설치 실패 — Gradle이 자동 설치를 시도합니다"
 
       - uses: gradle/actions/setup-gradle@v4
         with:
