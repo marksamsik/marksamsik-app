@@ -36,9 +36,12 @@ import java.util.Locale;
  */
 public class MainActivity extends Activity {
 
-    /** 포털 주소. Apps Script에서 「새 배포」를 하면 주소가 바뀌므로 반드시 「새 버전」으로만 배포할 것. */
-    static final String HOME =
-            "https://script.google.com/macros/s/AKfycbwYhsrixj_FvZCniX_xjWobQyC6EB6IXCzW_Sty-1xPbLakHMOmzRKwDKYevtE4mV6hKg/exec";
+    /**
+     * 시작 주소 = GitHub Pages 액자 페이지(docs/index.html). 그 안에 포털(Apps Script /exec)을 iframe으로 넣어
+     * 상단 「구글 앱스 스크립트 사용자가 만들었습니다」 문구가 안 보이게 합니다.
+     * 포털 주소 자체는 docs/index.html 의 PORTAL 값. Apps Script는 반드시 「새 버전」으로만 배포할 것.
+     */
+    static final String HOME = "https://marksamsik.github.io/marksamsik-app/";
     static final String OFFLINE = "file:///android_asset/offline.html";
 
     private WebView web;
@@ -132,7 +135,8 @@ public class MainActivity extends Activity {
         String scheme = u.getScheme(), host = u.getHost();
         if ("file".equals(scheme)) return true;
         if (!"https".equals(scheme) || host == null) return false;
-        return host.equals("script.google.com")
+        return host.equals("marksamsik.github.io")
+                || host.equals("script.google.com")
                 || host.endsWith(".googleusercontent.com")
                 || host.equals("accounts.google.com");
     }
