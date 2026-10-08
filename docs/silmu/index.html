@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101316">
+<meta name="robots" content="noindex,nofollow">
+<title>마크삼식 실무 생성기</title>
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  html,body{margin:0;height:100%;background:#101316;overflow:hidden}
+  iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#101316}
+  #off{display:none;position:fixed;inset:0;color:#e7e3dc;font:16px/1.7 sans-serif;text-align:center;padding:30vh 24px 0}
+  #off button{margin-top:16px;padding:12px 22px;border:0;border-radius:10px;background:#e0a53a;color:#241a06;font-size:16px;font-weight:700}
+</style>
+</head>
+<body>
+<!-- 실무 생성기(Apps Script 웹앱)를 액자처럼 끼워 넣어 상단 「Google Apps Script 사용자가 만들었습니다」 문구를 없앤 화면 (빨강 포털과 같은 방식) -->
+<iframe id="app" title="마크삼식 실무 생성기" allow="clipboard-write; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+<div id="off">📶 인터넷 연결을 확인해 주세요<br><button onclick="location.reload()">다시 시도</button></div>
+<script>
+  // ▼ 실무 생성기 웹앱 주소 (Apps Script 「배포 관리 → ✏️ → 새 버전」으로만 배포하면 안 바뀜)
+  var APP = "__EXEC__";
+  if (APP.indexOf('/exec') < 0) {
+    document.getElementById('off').innerHTML = '⚖️ 마크삼식 실무 생성기 — 준비 중이에요';
+    document.getElementById('off').style.display = 'block';
+    document.getElementById('app').style.display = 'none';
+  } else if (navigator.onLine === false) {
+    document.getElementById('off').style.display = 'block';
+    document.getElementById('app').style.display = 'none';
+  } else {
+    document.getElementById('app').src = APP;
+  }
+</script>
+</body>
+</html>
