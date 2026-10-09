@@ -30,7 +30,9 @@
     document.getElementById('off').style.display = 'block';
     document.getElementById('app').style.display = 'none';
   } else {
-    document.getElementById('app').src = APP;
+    // 주소 뒤 ?o=운영자열쇠 를 웹앱으로 그대로 넘김(스크립트 속성 OWNER_KEY 와 같으면 하루 3회 제한 없음)
+    var o = new URLSearchParams(location.search).get('o');
+    document.getElementById('app').src = APP + (o ? '?o=' + encodeURIComponent(o) : '');
   }
 </script>
 </body>
