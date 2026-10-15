@@ -49,5 +49,6 @@ jobs:
         with:
           name: marksamsik-app-${{ github.run_number }}
           path: |
+          retention-days: 7
             app/build/outputs/bundle/release/*.aab
             app/build/outputs/apk/release/*.apk
