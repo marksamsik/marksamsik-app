@@ -98,13 +98,14 @@ ol.kt li:last-child{border-bottom:0}
   <a class="play" href="https://play.google.com/store/apps/details?id=com.marksamsik.portal" target="_blank" rel="noopener">▶ 마크삼식 보디빌딩 앱 (Play 스토어)</a>
   <a class="web" href="https://marksamsik.github.io/marksamsik-app/" target="_blank" rel="noopener">🌐 마크삼식 공식 포털 (웹)</a>
 </div>
-<div class="foot">마크삼식(킹콩) 스포츠경영관리사 실기 교재에서 뽑은 연습 문제예요. 시험 주관 기관과 관계없는 개인 학습 자료이며, 문제와 해설의 무단 복제·배포를 금합니다.<br><a class="admin" href="https://script.google.com/macros/s/AKfycbwurwQ0dc9oh-25Ok4AHDYXAaLnNNV8cbjboyPEPiYH1avslmVNysyC5EKkkCFCEXw/exec?fn=admin">⚙ 관리자</a></div>
+<div class="foot">마크삼식(킹콩) 스포츠경영관리사 실기 교재에서 뽑은 연습 문제예요. 시험 주관 기관과 관계없는 개인 학습 자료이며, 문제와 해설의 무단 복제·배포를 금합니다.<br><a class="admin" href="https://script.google.com/macros/s/AKfycbwurwQ0dc9oh-25Ok4AHDYXAaLnNNV8cbjboyPEPiYH1avslmVNysyC5EKkkCFCEXw/exec?fn=admin">⚙ 관리자 모드</a></div>
 </div>
 <script>
 const API='https://script.google.com/macros/s/AKfycbwurwQ0dc9oh-25Ok4AHDYXAaLnNNV8cbjboyPEPiYH1avslmVNysyC5EKkkCFCEXw/exec';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let VID='';try{VID=localStorage.getItem('skg_vid')||'';if(!VID){VID=Math.random().toString(36).slice(2,12);localStorage.setItem('skg_vid',VID)}}catch(e){VID='x'+Math.random().toString(36).slice(2,8)}
-function ping(ev,id){try{new Image().src=API+'?fn=hit&e='+ev+'&id='+encodeURIComponent(id||'')+'&v='+VID+'&t='+Date.now()}catch(e){}}
+const PVK=(new URLSearchParams(location.search).get('pv')||'').replace(/[^a-zA-Z0-9]/g,'');
+function ping(ev,id){if(PVK)return;try{new Image().src=API+'?fn=hit&e='+ev+'&id='+encodeURIComponent(id||'')+'&v='+VID+'&t='+Date.now()}catch(e){}}
 function jsonp(url){return new Promise((ok,no)=>{const cb='kk'+Date.now();const sc=document.createElement('script');window[cb]=d=>{ok(d);delete window[cb];sc.remove()};sc.onerror=()=>no(new Error('load'));sc.src=url+(url.includes('?')?'&':'?')+'callback='+cb;document.body.appendChild(sc);setTimeout(()=>no(new Error('timeout')),15000)})}
 const EB='https://kmong.com/gig/797427',PLAY='https://play.google.com/store/apps/details?id=com.marksamsik.skg';
 function srcBox(src){
@@ -142,11 +143,12 @@ function show(i){
   document.querySelectorAll('#days button').forEach((b,k)=>b.classList.toggle('on',k===i));
 }
 function closed(t){document.getElementById('main').innerHTML=`<div class="intro" style="text-align:center">${t}</div>`;}
-jsonp(API+'?fn=data').then(d=>{
+jsonp(API+'?fn=data'+(PVK?'&pv='+PVK:'')).then(d=>{
   if(!d||d.status!=='open'||!d.days||!d.days.length){closed(d&&d.status==='error'?'⚠️ 문제를 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.':'🔒 지금은 문제 공개 기간이 아니에요.<br>공개가 시작되면 매일 자정 새 문제가 올라와요.');return}
   DATA=d;
   document.getElementById('days').innerHTML=d.days.map(x=>{const k=d.today-x.day;return `<button>${k?(k===1?'어제':k+'일 전'):'오늘'}<br><small>${md(x.date)}(${wk(x.date)})</small></button>`}).join('');
   document.querySelectorAll('#days button').forEach((b,i)=>b.onclick=()=>{show(i);scrollTo(0,0)});
+  if(PVK){const b=document.createElement('div');b.className='intro';b.style.cssText='background:#2a2118;color:#fff;text-align:center';b.innerHTML='👀 관리자 미리보기'+(d.preview?' · 아직 공개 전이라 수험생에게는 안 보여요':'')+' · 통계에 안 잡혀요';document.getElementById('main').prepend(b)}
   show(0);ping('v','');
 }).catch(()=>closed('⚠️ 문제를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 열어 주세요.'));
 </script>
