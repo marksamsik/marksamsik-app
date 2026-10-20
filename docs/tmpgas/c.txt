@@ -1,0 +1,180 @@
+/* 스경사 실기 오늘의 문제 — 서버(Apps Script, 「스경사_실기모의고사」 시트를 읽는 스크립트)
+ * 웹페이지(GitHub)는 ?fn=data 로 오늘 + 지난 3일 문제만 받아 간다(앞으로 나올 문제·전체 목록은 보내지 않음).
+ * 관리자 메뉴: 이 웹 앱 주소에 ?fn=admin — 내 구글 계정으로 로그인한 상태에서만 열린다.
+ * 배포: 배포 → 새 배포 → 유형 「웹 앱」 → 실행 사용자 「나」 · 액세스 「모든 사용자」. 고친 뒤에는 배포 관리 → ✏️ → 새 버전.
+ */
+const BANK = '문제은행', STAT = '통계';
+const KEEP = 4;            // 오늘 포함 4일(오늘 + 지난 3일)
+const CACHE_KEY = 'skg_data';
+
+const SHEET_ID = '1dZogdGnFAdAyjKj8DY6pH1PIkO72wD65HvPLr2zGsYg';   // 드라이브 › 마크삼식어플6_스경사 › 실기모의고사 › 스경사_실기모의고사
+function ss_() { return SpreadsheetApp.openById(SHEET_ID); }
+function props_() { return PropertiesService.getScriptProperties(); }
+function todayKst_() { return Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd'); }
+function dayOf_(start) {
+  const a = new Date(start + 'T00:00:00+09:00').getTime(), b = new Date(todayKst_() + 'T00:00:00+09:00').getTime();
+  return Math.floor((b - a) / 86400000) + 1;
+}
+function dateOfDay_(start, n) {
+  const t = new Date(new Date(start + 'T00:00:00+09:00').getTime() + (n - 1) * 86400000);
+  return Utilities.formatDate(t, 'Asia/Seoul', 'yyyy-MM-dd');
+}
+function clearCache_() { CacheService.getScriptCache().remove(CACHE_KEY); }
+
+/* ---------- 문제은행 읽기 ---------- */
+function bank_() {
+  const sh = ss_().getSheetByName(BANK);
+  if (!sh) throw new Error('「' + BANK + '」 탭이 없습니다.');
+  const v = sh.getDataRange().getDisplayValues(), h = v.shift().map(x => String(x).trim());
+  const c = n => h.indexOf(n);
+  return { sh: sh, h: h, rows: v.map((r, i) => ({
+    row: i + 2, id: r[c('ID')], kind: r[c('구분')], open: String(r[c('공개')]).trim().toUpperCase() !== 'N',
+    days: String(r[c('공개일차')] || '').split(/[,\s]+/).map(x => parseInt(x, 10)).filter(x => x > 0),
+    ch: r[c('장')], chn: r[c('장 이름')], typ: r[c('유형')], pts: r[c('배점')], min: r[c('목표(분)')], g: r[c('급')],
+    q: r[c('문제')], s: r[c('조건·지시')], a: r[c('정답 핵심')], k: r[c('꼭 들어갈 말')], kt: r[c('채점 포인트')], tip: r[c('감점 피하기')]
+  })) };
+}
+function cycle_(rows) { return rows.reduce((m, r) => r.open ? Math.max(m, ...r.days, 0) : m, 0); }
+function pub_(r) {   // 웹에 보내는 모양
+  const kt = String(r.kt || '').split('\n').map(s => s.trim()).filter(Boolean).map(s => {
+    const m = s.match(/^\[([^\]]+)\]\s*(.*)$/); let p = '', t = s; if (m) { p = m[1]; t = m[2]; }
+    const w = t.split('⚠️'); return [p, w[0].trim(), (w[1] || '').trim()];
+  });
+  return { i: r.id, calc: r.kind === '계산', chn: r.chn, t: r.typ, p: r.pts, m: r.min, g: r.g, q: r.q, s: r.s, a: r.a,
+    k: String(r.k || '').split('|').map(s => s.trim()).filter(Boolean), kt: kt, tip: r.tip };
+}
+function itemsOfDay_(rows, n) {
+  const list = rows.filter(r => r.open && r.days.indexOf(n) >= 0);
+  return list.filter(r => r.kind !== '계산').concat(list.filter(r => r.kind === '계산'));
+}
+
+/* ---------- 웹페이지용 데이터 ---------- */
+function data_() {
+  const p = props_(), status = p.getProperty('STATUS') || 'closed', start = p.getProperty('START');
+  if (status !== 'open' || !start) return { status: 'closed' };
+  const today = dayOf_(start);
+  const cache = CacheService.getScriptCache(), hit = cache.get(CACHE_KEY);
+  if (hit) { const o = JSON.parse(hit); if (o.today === today) return o; }
+  const rows = bank_().rows, cyc = cycle_(rows);
+  const days = [];
+  for (let k = 0; k < KEEP; k++) {
+    const n = today - k; if (n < 1) break;
+    const cd = ((n - 1) % cyc) + 1;      // 한 바퀴가 끝나면 1일차부터 다시
+    days.push({ day: n, date: dateOfDay_(start, n), items: itemsOfDay_(rows, cd).map(pub_) });
+  }
+  const out = { status: 'open', today: today, cycle: cyc, days: days };
+  try { cache.put(CACHE_KEY, JSON.stringify(out), 600); } catch (e) {}
+  return out;
+}
+
+/* ---------- 이용 기록 ---------- */
+function hit_(e) {
+  const ev = e.parameter.e === 'c' ? 'check' : 'view', id = String(e.parameter.id || '').slice(0, 10), vid = String(e.parameter.v || '').slice(0, 16);
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(3000)) return { ok: false };
+  try {
+    let sh = ss_().getSheetByName(STAT);
+    if (!sh) { sh = ss_().insertSheet(STAT); sh.appendRow(['날짜', '시각', '종류', '문제ID', '방문자']); }
+    sh.appendRow([todayKst_(), Utilities.formatDate(new Date(), 'Asia/Seoul', 'HH:mm:ss'), ev, id, vid]);
+  } finally { lock.releaseLock(); }
+  return { ok: true };
+}
+
+function out_(obj, cb) {
+  const s = JSON.stringify(obj);
+  if (cb && /^[A-Za-z_$][\w$]*$/.test(cb)) return ContentService.createTextOutput(cb + '(' + s + ')').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(s).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  const fn = (e && e.parameter && e.parameter.fn) || 'admin', cb = e.parameter.callback;
+  try {
+    if (fn === 'data') return out_(data_(), cb);
+    if (fn === 'hit') return out_(hit_(e), cb);
+  } catch (err) { return out_({ status: 'error', error: String(err.message || err) }, cb); }
+  if (!isAdmin_()) return HtmlService.createHtmlOutput('<p style="font-family:sans-serif;padding:24px">관리자만 볼 수 있어요. 마크삼식 구글 계정으로 로그인한 뒤 다시 열어 주세요.</p>');
+  return HtmlService.createHtmlOutputFromFile('Admin').setTitle('스경사 실기 관리자').addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/* ---------- 관리자 ---------- */
+function isAdmin_() {
+  const me = Session.getEffectiveUser().getEmail(), who = Session.getActiveUser().getEmail();
+  return !!(who && me && who === me);
+}
+function guard_() { if (!isAdmin_()) throw new Error('관리자만 사용할 수 있습니다.'); }
+
+function adminState() {
+  guard_();
+  const p = props_(), st = p.getProperty('STATUS') || 'closed', start = p.getProperty('START') || '';
+  const rows = bank_().rows, cyc = cycle_(rows);
+  const today = start ? dayOf_(start) : 0;
+  return JSON.stringify({ status: st, start: start, today: today, cycle: cyc, cday: today ? ((today - 1) % cyc) + 1 : 0,
+    url: ss_().getUrl(), total: rows.length, open: rows.filter(r => r.open).length });
+}
+function adminAction(action, n) {
+  guard_();
+  const p = props_();
+  if (action === 'open') { if (!p.getProperty('START')) p.setProperty('START', todayKst_()); p.setProperty('STATUS', 'open'); }
+  else if (action === 'close') p.setProperty('STATUS', 'closed');
+  else if (action === 'reset') { p.deleteProperty('START'); p.setProperty('STATUS', 'closed'); }
+  else if (action === 'openAt') {
+    n = Math.max(1, Math.floor(Number(n) || 1));
+    const d = new Date(new Date(todayKst_() + 'T00:00:00+09:00').getTime() - (n - 1) * 86400000);
+    p.setProperty('START', Utilities.formatDate(d, 'Asia/Seoul', 'yyyy-MM-dd')); p.setProperty('STATUS', 'open');
+  }
+  clearCache_();
+  return adminState();
+}
+function adminStats() {
+  guard_();
+  const sh = ss_().getSheetByName(STAT); if (!sh || sh.getLastRow() < 2) return JSON.stringify({ days: [], top: [] });
+  const v = sh.getRange(2, 1, sh.getLastRow() - 1, 5).getDisplayValues();
+  const byDay = {}, byQ = {};
+  v.forEach(r => {
+    const d = r[0], k = r[2], id = r[3], vid = r[4];
+    const o = byDay[d] = byDay[d] || { date: d, view: 0, check: 0, vis: {} };
+    if (k === 'view') { o.view++; if (vid) o.vis[vid] = 1; } else { o.check++; if (id) byQ[id] = (byQ[id] || 0) + 1; }
+  });
+  const days = Object.values(byDay).sort((a, b) => a.date < b.date ? 1 : -1).slice(0, 21)
+    .map(o => ({ date: o.date, visitors: Object.keys(o.vis).length, view: o.view, check: o.check }));
+  const top = Object.keys(byQ).map(id => ({ id: id, n: byQ[id] })).sort((a, b) => b.n - a.n).slice(0, 10);
+  return JSON.stringify({ days: days, top: top });
+}
+function adminDay(n) {   // n일차(순환 일차) 문제 목록
+  guard_();
+  const rows = bank_().rows;
+  return JSON.stringify({ day: n, items: itemsOfDay_(rows, Number(n)).map(r => ({ id: r.id, kind: r.kind, q: r.q })),
+    all: rows.map(r => ({ id: r.id, kind: r.kind, q: String(r.q).slice(0, 40), days: r.days.join(','), open: r.open })) });
+}
+function setDays_(b, id, fnc) {
+  const r = b.rows.find(x => x.id === id); if (!r) throw new Error('문제를 찾지 못했습니다: ' + id);
+  const days = fnc(r.days.slice()).filter((x, i, a) => x > 0 && a.indexOf(x) === i).sort((x, y) => x - y);
+  b.sh.getRange(r.row, b.h.indexOf('공개일차') + 1).setNumberFormat('@').setValue(days.join(','));   // 글자로(숫자로 바뀌지 않게)
+}
+function adminSwap(n, outId, inId) {   // n일차에서 outId를 빼고 inId를 넣기(둘 중 하나만 써도 됨)
+  guard_();
+  n = Number(n); const b = bank_();
+  if (outId) setDays_(b, outId, d => d.filter(x => x !== n));
+  if (inId) setDays_(b, inId, d => d.concat([n]));
+  clearCache_();
+  return adminDay(n);
+}
+function adminItem(id) {
+  guard_();
+  const r = bank_().rows.find(x => x.id === id); if (!r) throw new Error('문제 없음: ' + id);
+  return JSON.stringify(r);
+}
+function adminSaveItem(id, obj) {
+  guard_();
+  const b = bank_(), r = b.rows.find(x => x.id === id); if (!r) throw new Error('문제 없음: ' + id);
+  const map = { q: '문제', s: '조건·지시', a: '정답 핵심', k: '꼭 들어갈 말', kt: '채점 포인트', tip: '감점 피하기', open: '공개', days: '공개일차' };
+  Object.keys(map).forEach(k => {
+    if (!(k in obj)) return;
+    const col = b.h.indexOf(map[k]) + 1; if (col < 1) return;
+    let v = obj[k]; if (k === 'open') v = v ? 'Y' : 'N';
+    const rg = b.sh.getRange(r.row, col); if (k === 'days') rg.setNumberFormat('@'); rg.setValue(v);
+  });
+  clearCache_();
+  return adminItem(id);
+}
+function adminClearCache() { guard_(); clearCache_(); return 'ok'; }
