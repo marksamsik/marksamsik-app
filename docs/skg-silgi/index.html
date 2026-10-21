@@ -63,6 +63,7 @@ ol.kt li:last-child{border-bottom:0}
 .foot{font-size:12px;color:var(--sub);margin-top:18px}
 .src{margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(240,138,36,.08);font-size:13px;line-height:1.6}.src div{margin:2px 0}.src a{font-weight:700;white-space:nowrap}.src .basis{color:var(--sub,#7a6a5a);font-size:12px}
 .ma{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;line-height:1.7}.ma p{margin:4px 0}.ma .tw{overflow-x:auto;margin:6px 0}.ma table{border-collapse:collapse;font-size:12.5px;min-width:100%}.ma th,.ma td{border:1px solid var(--line);padding:4px 6px;vertical-align:top;text-align:left}.ma th{background:var(--chip)}h4 small{font-weight:400;color:var(--sub);font-size:12px}
+.hintb{display:block;width:100%;margin:8px 0 0;padding:10px;border-radius:12px;border:1.5px dashed var(--main);background:transparent;color:var(--main2);font:inherit;font-weight:700;cursor:pointer}.hintbox{display:none;margin:8px 0 0;padding:10px 12px;border-radius:12px;background:var(--chip);font-size:14px}.hintbox.show{display:block}.hintbox small{color:var(--sub)}
 </style>
 </head>
 <body>
@@ -75,7 +76,7 @@ ol.kt li:last-child{border-bottom:0}
   </div>
   <a class="admbtn" href="https://script.google.com/macros/s/AKfycbwurwQ0dc9oh-25Ok4AHDYXAaLnNNV8cbjboyPEPiYH1avslmVNysyC5EKkkCFCEXw/exec?fn=admin" target="_blank" rel="noopener" title="관리자 모드(마크삼식 계정만)">⚙ 관리자</a>
 </header>
-<div class="intro">📝 매일 자정에 <b>4문제</b>가 새로 나와요(이날은 <b id="cnt"></b>, 서술·계산이 고루 섞여요). 지난 3일 문제도 다시 볼 수 있어요. 답을 써 보고 <b>✅ 답변 확인</b>을 누르면 정답 핵심과 채점 포인트를 볼 수 있어요.</div>
+<div class="intro">📝 매일 자정에 <b>4문제</b>가 새로 나와요(이날은 <b id="cnt"></b>). 쉬운 문제부터 차근차근 어려워지고, 서술·계산이 고루 섞여요. 지난 3일 문제도 다시 볼 수 있어요. 막히면 <b>💡 힌트</b>를 열어 보고, 답을 써 본 뒤 <b>✅ 답변 확인</b>을 누르면 정답 핵심과 채점 포인트를 볼 수 있어요.</div>
 
 <div id="main"><div class="days" id="days"></div>
 <div class="sec" id="esec">✍️ 서술형</div>
@@ -130,6 +131,7 @@ function card(x,n){
   return `<div class="q${x.calc?' calc':''}"><div class="top"><span class="no">${x.calc?'계산':'Q'+n}</span>${x.g?`<span class="g">${esc(x.g)}급</span>`:`<span class="g">🎯 실전</span>`}<span class="tag">${esc(x.chn)}</span><span class="tag">${esc(x.t)} · ${esc(x.p)}점 · 목표 ${esc(x.m)}분</span></div>
   <div class="stem">${esc(x.q)}</div>${x.s?`<div class="subq">${esc(x.s)}</div>`:''}
   <textarea placeholder="내 답을 먼저 써 보세요 (저장되지 않아요)"></textarea>
+  ${(x.k||[]).length?`<button class="hintb">💡 힌트 보기</button><div class="hintbox"><b>답에 꼭 들어갈 말</b><div class="chips">${x.k.map(c=>`<span>${esc(c)}</span>`).join('')}</div><small>이 말들을 넣어 문장으로 써 보세요.</small></div>`:''}
   <button class="chk" data-id="${esc(x.i)}">✅ 답변 확인</button>
   <div class="ans">${x.a?`<h4>🎯 정답 핵심</h4><div class="one">${esc(x.a)}</div>`:''}
   ${maBox(x.ma)}
@@ -149,6 +151,7 @@ function show(i){
   document.getElementById('essay').innerHTML=es.map((x,j)=>card(x,j+1)).join('')||'<div class="tip">이날은 서술형 문제가 없어요.</div>';
   document.getElementById('calcsec').style.display=cs.length?'':'none';
   document.getElementById('calc').innerHTML=cs.map(x=>card(x,0)).join('');
+  document.querySelectorAll('button.hintb').forEach(b=>b.onclick=()=>{const on=b.nextElementSibling.classList.toggle('show');b.textContent=on?'💡 힌트 닫기':'💡 힌트 보기'});
   document.querySelectorAll('button.chk').forEach(b=>b.onclick=()=>{const a=b.nextElementSibling;const on=a.classList.toggle('show');b.classList.toggle('on',on);b.textContent=on?'🙈 답 숨기기':'✅ 답변 확인';if(on&&!checked[b.dataset.id]){checked[b.dataset.id]=1;ping('c',b.dataset.id)}});
   document.querySelectorAll('#days button').forEach((b,k)=>b.classList.toggle('on',k===i));
 }
