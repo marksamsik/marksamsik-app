@@ -52,7 +52,7 @@ h1 b{color:var(--main)}
 .concept{background:var(--chip);border:1.5px solid var(--main);border-radius:12px;padding:10px 12px}
 .concept .lk{margin-top:6px;font-size:13px;color:var(--sub)}
 details{margin-top:6px}.csd{margin-top:8px}.cs{margin-top:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px;line-height:1.7;overflow-x:auto}.cs h3{font-size:14.5px;margin:2px 0 6px;color:var(--main2)}.cs .cs-from{font-size:12px;color:var(--sub)}.cs svg{max-width:100%;height:auto;background:#fff;border-radius:8px}.cs figure{margin:6px 0}.cs .src,.cs .verify,.cs .tag{font-size:11.5px}summary{cursor:pointer;font-weight:700;color:var(--main2);font-size:13.5px}
-.srcb{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:13px;line-height:1.6}.srcb div{margin:2px 0}.srcb a{font-weight:700;white-space:nowrap;color:var(--main2)}
+.srcb{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:13px;line-height:1.6}.srcb div{margin:2px 0}.srcb a{font-weight:700;white-space:nowrap;color:var(--main2)}.srcb .bk{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}.srcb .bk a{display:inline-block;margin-right:8px}
 .purple{background:linear-gradient(135deg,#7b4bd0,#a77ff0);color:#fff;border-radius:16px;padding:14px 16px;margin-top:20px}
 .purple b{font-size:17px}.purple .soon{display:inline-block;background:#fff;color:#5d32ad;font-weight:700;font-size:12px;border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:2px}
 .purple ul{margin:6px 0 0;padding-left:18px;font-size:13.5px}
@@ -106,9 +106,15 @@ function ping(ev,id){if(PVK)return;try{new Image().src=API+'?fn=hit&e='+ev+'&id=
 function jsonp(url){return new Promise((ok,no)=>{const cb='kk'+Date.now();const sc=document.createElement('script');window[cb]=d=>{ok(d);delete window[cb];sc.remove()};sc.onerror=()=>no(new Error('load'));sc.src=url+(url.includes('?')?'&':'?')+'callback='+cb;document.body.appendChild(sc);setTimeout(()=>no(new Error('timeout')),15000)})}
 const wrapTbl=h=>String(h||'').replace(/<table/g,'<div class="tw"><table').replace(/<\/table>/g,'</table></div>');
 function kws(key){const d=document.createElement('div');d.innerHTML=key||'';return [...d.querySelectorAll('.kw')].map(e=>e.textContent.trim()).filter(Boolean)}
-function srcBox(src){
+const BK={'그림으로 읽는 심전도 기초':['심전도 기초입문서',816843],'내 심박수 읽는 법':['운동강도 기초입문서',818178],'내 건강검진 결과지 읽는 법':['만성질환 기초입문서',818469],'운동부하·심전도 심화입문':['운동부하 및 심전도 심화입문서',819055],'스페셜테스트 실기입문':['스페셜테스트 실기입문서',821102],'운동상해 기초입문(진단명 읽기)':['운동상해 기초입문서',819806],'내 몸 사용설명서':['기능해부 기초입문서',821253],'내 체력 측정 결과지 읽는 법':['체력평가 기초입문서',817596],'스포츠심리학':['스포츠심리학',836328]};
+function bookLine(con){
+  const seen=[];(con||[]).forEach(c=>{const t=String(c).replace(/^📚\s*/,'').split('›')[0].trim();if(BK[t]&&seen.indexOf(t)<0)seen.push(t)});
+  if(!seen.length)return '';
+  return `<div class="bk">📗 같이 보면 좋은 책: ${seen.map(t=>`<a href="https://kmong.com/gig/${BK[t][1]}" target="_blank" rel="noopener">『킹콩 ${esc(BK[t][0])}』 보기 ›</a>`).join(' ')}</div>`;
+}
+function srcBox(src,con){
   const ls=String(src||'').split('\n').map(l=>l.trim()).filter(Boolean);if(!ls.length)return '';
-  return `<div class="srcb"><h4>📎 출처</h4>${ls.map(l=>l.startsWith('📘')?`<div>${esc(l)} <a href="${EB}" target="_blank" rel="noopener">해설집 보기 ›</a></div>`:l.startsWith('📱')?`<div>${esc(l)} <small>(출시 준비 중)</small></div>`:`<div style="color:var(--sub);font-size:12px">${esc(l)}</div>`).join('')}</div>`;
+  return `<div class="srcb"><h4>📎 출처</h4>${ls.map(l=>l.startsWith('📘')?`<div>${esc(l)} <a href="${EB}" target="_blank" rel="noopener">해설집 보기 ›</a></div>`:l.startsWith('📱')?`<div>${esc(l)} <small>(출시 준비 중)</small></div>`:`<div style="color:var(--sub);font-size:12px">${esc(l)}</div>`).join('')}${bookLine(con)}</div>`;
 }
 function card(x){
   const hk=kws(x.key);
@@ -126,7 +132,7 @@ function card(x){
     <h4>📝 상세해설</h4><div class="box hx">${wrapTbl(x.ex)}</div>
     ${x.wr?`<details><summary>🚫 오답노트 (보기별 분석)</summary><div class="box hx" style="margin-top:6px">${wrapTbl(x.wr)}</div></details>`:''}
     ${x.it?`<details><summary>💡 출제의도</summary><div class="box hx" style="margin-top:6px">${wrapTbl(x.it)}</div></details>`:''}
-    ${srcBox(x.src)}
+    ${srcBox(x.src,x.con)}
   </div></div>`;
 }
 const wk=s=>'일월화수목금토'[new Date(s+'T00:00:00Z').getUTCDay()];
