@@ -31,11 +31,6 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Portal/Info.plist
         ENABLE_BITCODE: NO
-      configs:
-        Release:
-          # 기기 등록 없이 App Store 배포용으로 바로 서명(개발용 서명은 「등록된 기기」가 있어야 해서 실패했음 10/25)
-          CODE_SIGN_IDENTITY: Apple Distribution
-          "CODE_SIGN_IDENTITY[sdk=iphoneos*]": Apple Distribution
     info:
       path: Portal/Info.plist
       properties:
