@@ -39,7 +39,13 @@
     try { return window.KKApp && KKApp.packState ? JSON.parse(KKApp.packState()) : { owned: false, ready: false, msg: '앱 밖에서는 결제할 수 없어요.' }; }
     catch (e) { return { owned: false, ready: false, msg: '결제 상태를 읽지 못했어요.' }; }
   }
-  function send(src, pack) { try { src.postMessage({ kk: 'silmu', t: 'state', pack: pack }, '*'); } catch (e) {} }
+  // 앱이 할 수 있는 일(10/25 빌드부터 share · keepScreenOn). 옛 빌드면 false → 화면이 공유 대신 복사, 꺼짐 막기 메뉴 숨김
+  function capNow() {
+    var K = window.KKApp || {}, on = false;
+    try { on = K.isKeepOn ? !!K.isKeepOn() : false; } catch (e) {}
+    return { share: !!K.share, keep: !!K.keepScreenOn, keepOn: on };
+  }
+  function send(src, pack) { try { src.postMessage({ kk: 'silmu', t: 'state', pack: pack, cap: capNow() }, '*'); } catch (e) {} }
   // 앱(Java)이 결제 상태가 바뀔 때 부름
   window.kkPack = function (st) { waiters.forEach(function (w) { send(w, st); }); };
   window.addEventListener('message', function (e) {
@@ -51,6 +57,9 @@
     else if (d.t === 'buy' && window.KKApp) KKApp.buyItem(String(d.id || 'silmu_full'));
     else if (d.t === 'refresh' && window.KKApp) KKApp.refreshPack();
     else if (d.t === 'copy' && window.KKApp && KKApp.copy) KKApp.copy(String(d.text || '').slice(0, 200));
+    else if (d.t === 'share' && window.KKApp && KKApp.share) KKApp.share(String(d.text || '').slice(0, 4000));
+    else if (d.t === 'keep' && window.KKApp && KKApp.keepScreenOn) KKApp.keepScreenOn(!!d.on);
+    else if (d.t === 'reload') location.reload();
   });
 </script>
 </body>
