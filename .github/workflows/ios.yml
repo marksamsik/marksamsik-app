@@ -7,6 +7,10 @@ name: 아이폰 앱 만들기 (TestFlight 업로드)
 on:
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash   # bash -eo pipefail → 「| tail」 때문에 실패가 성공으로 보이는 일 막기
+
 jobs:
   ios:
     runs-on: macos-15

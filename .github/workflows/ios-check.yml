@@ -6,6 +6,10 @@ on:
     paths: ['ios/**', '.github/workflows/ios-check.yml']
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash   # bash -eo pipefail → 「| tail」 때문에 실패가 성공으로 보이는 일 막기
+
 jobs:
   check:
     runs-on: macos-15
