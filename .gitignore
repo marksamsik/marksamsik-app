@@ -5,3 +5,5 @@ keystore_base64.txt
 .gradle/
 build/
 local.properties
+ios/Portal.xcodeproj/
+ios/Portal/Info.plist

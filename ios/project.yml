@@ -1,0 +1,47 @@
+# 🍎 마크삼식 보디빌딩 아이폰 앱 — XcodeGen 설정 (GitHub Actions 맥 서버에서 xcodegen generate 로 Portal.xcodeproj 생성)
+name: Portal
+options:
+  bundleIdPrefix: com.marksamsik
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    DEVELOPMENT_TEAM: X76WSY6867
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Portal:
+    type: application
+    platform: iOS
+    sources:
+      - path: Portal
+        excludes: ["web/**"]
+      - path: Portal/web
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.marksamsik.portal
+        PRODUCT_NAME: Portal
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Portal/Info.plist
+        ENABLE_BITCODE: NO
+    info:
+      path: Portal/Info.plist
+      properties:
+        CFBundleDisplayName: 마크삼식 보디빌딩
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen:
+          UIColorName: LaunchBG
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIRequiredDeviceCapabilities: [arm64]

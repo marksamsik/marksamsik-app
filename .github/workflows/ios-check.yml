@@ -1,0 +1,25 @@
+name: 아이폰 코드 점검 (서명·업로드 안 함)
+
+# ios/ 를 고쳐 올리면 시뮬레이터용으로 컴파일만 해 봅니다. Secrets 를 쓰지 않습니다.
+on:
+  push:
+    paths: ['ios/**', '.github/workflows/ios-check.yml']
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: 프로젝트 만들기 · 컴파일
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -version
+          xcodebuild -project Portal.xcodeproj -scheme Portal -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build | tail -n 40
