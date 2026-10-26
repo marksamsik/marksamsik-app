@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>삼식 브리핑 아카이브</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#f4f2ed}
+  @media (prefers-color-scheme:dark){html,body{background:#121313}}
+  #f{display:block;border:0;width:100%;height:100%}
+  #msg{font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#7d776a;
+       text-align:center;padding:40px 20px;font-size:14px;line-height:1.7}
+</style>
+</head>
+<body>
+<iframe id="f" title="삼식 브리핑 아카이브" allow="clipboard-write"></iframe>
+<div id="msg" hidden>주소가 설정되지 않았습니다. 이 파일의 PORTAL 값을 /exec 주소로 바꿔 주세요.</div>
+<script>
+  var PORTAL = "https://script.google.com/macros/s/AKfycbxI9GX_FVwtLYtBBKIG4JogZg68HZWDKcGPv-g_EF_EK3YBvOJ1B8iXL3esN5WF51r1/exec";
+  var ok = PORTAL.indexOf("script.google.com") >= 0 && PORTAL.indexOf("exec") >= 0;
+  if (ok) {
+    document.getElementById("f").src = PORTAL;
+  } else {
+    document.getElementById("f").hidden = true;
+    document.getElementById("msg").hidden = false;
+  }
+</script>
+</body>
+</html>
