@@ -19,7 +19,8 @@
   var PORTAL = "https://script.google.com/macros/s/AKfycbxI9GX_FVwtLYtBBKIG4JogZg68HZWDKcGPv-g_EF_EK3YBvOJ1B8iXL3esN5WF51r1/exec";
   var ok = PORTAL.indexOf("script.google.com") >= 0 && PORTAL.indexOf("exec") >= 0;
   if (ok) {
-    document.getElementById("f").src = PORTAL;
+    var q = window.location.search || "";
+    document.getElementById("f").src = PORTAL + q;
   } else {
     document.getElementById("f").hidden = true;
     document.getElementById("msg").hidden = false;
