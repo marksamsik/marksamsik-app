@@ -74,3 +74,11 @@
 - JS 브리지 `window.KKApp`: `speak(text)`, `canSpeak()`, `keepScreenOn(bool)`, `retry()`, `version()` — 포털 Index의 `tmSay`·`tmAwake`가 사용
 - 인터넷 오류 시 `assets/offline.html`
 - 서명: GitHub Secrets → `KEYSTORE_FILE` 환경변수로 전달, 업로드 키 alias `upload` (Play 앱 서명 사용)
+
+## 🩷 마크삼식 헬스 기록 — 아이폰판 (`ios_health/`, 10/31 시작)
+- 번들 ID `com.marksamsik.health`(안드로이드와 같음), iOS 16 이상(사진 글자 인식 한국어), 아이폰 전용·세로
+- 화면 `ios_health/Health/www` = 안드로이드 핑크(gusul-app `pink/app/src/main/assets/www`) 복사본. 화면을 고치면 핑크 쪽 빌드 후 여기로 다시 복사
+- 앱 다리 `window.KKApp`(안드로이드와 같은 이름): 말로 기록(아이폰 음성 인식) · 결과지 글자 읽기(Vision) · 휴식 끝 알림(로컬 알림) · 오운완 사진 저장/공유 · 백업 파일 저장(파일 앱) · 진동 · platform()='ios'
+- 아이폰 전용 「기록 지킴이」: pk_ 기록을 앱 파일(Application Support/pk_backup.json)에도 복사해 두고, 웹 저장소가 비면 되살림
+- 뒤로: 화면 왼쪽 가장자리에서 밀기 → window.kkBack()
+- 워크플로: `ios-health-check.yml`(시뮬레이터 컴파일만, 손으로 실행) · `ios-health.yml`(TestFlight 업로드, Secrets 는 빨강과 같은 ASC_KEY_ID·ASC_ISSUER_ID·ASC_KEY_P8)

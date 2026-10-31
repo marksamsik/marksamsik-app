@@ -1,0 +1,79 @@
+name: 🩷 핑크 아이폰 앱 만들기 (TestFlight 업로드)
+
+# 🩷 마크삼식 헬스 기록 아이폰 앱(com.marksamsik.health) — 화면은 ios_health/Health/www (안드로이드 핑크와 같은 파일)
+# 「Run workflow」를 누르면 맥 서버에서 빌드 → 서명 → App Store Connect(TestFlight)로 바로 올립니다.
+# 필요한 Secrets: ASC_KEY_ID · ASC_ISSUER_ID · ASC_KEY_P8 (App Store Connect API 팀 키, 역할 「관리자」)
+# 빌드 번호 = 실행 번호(run_number), 앱 버전 = ios_health/project.yml 의 MARKETING_VERSION
+on:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash   # bash -eo pipefail → 「| tail」 때문에 실패가 성공으로 보이는 일 막기
+
+jobs:
+  ios_health:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 최신 Xcode 고르기
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Secrets 확인
+        run: |
+          test -n "$KEY_ID" || { echo "::error::ASC_KEY_ID 가 없어요"; exit 1; }
+          test -n "$ISSUER_ID" || { echo "::error::ASC_ISSUER_ID 가 없어요"; exit 1; }
+          xcodebuild -version
+
+      - name: API 키 파일 만들기
+        env:
+          P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s\n' "$P8" > "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8"
+          grep -q "BEGIN PRIVATE KEY" "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" || { echo "::error::ASC_KEY_P8 내용이 올바르지 않아요"; exit 1; }
+
+      - name: 프로젝트 만들기 (XcodeGen)
+        working-directory: ios_health
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: 보관(archive) · 서명
+        working-directory: ios_health
+        run: |
+          xcodebuild -project Health.xcodeproj -scheme Health -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/Health.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            archive > "$RUNNER_TEMP/archive.log" 2>&1 || {
+              grep -E "error:|error -|Signing|signing|provisioning|certificate|No Accounts|No profiles|device" "$RUNNER_TEMP/archive.log" | grep -v "^\s*$" | sort -u | head -n 25 | while IFS= read -r l; do echo "::error::${l:0:900}"; done
+              tail -n 40 "$RUNNER_TEMP/archive.log"; exit 1; }
+          tail -n 15 "$RUNNER_TEMP/archive.log"
+          test -d "$RUNNER_TEMP/Health.xcarchive"
+
+      - name: TestFlight 로 올리기
+        working-directory: ios_health
+        run: |
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Health.xcarchive" \
+            -exportOptionsPlist ExportOptions.plist -exportPath "$RUNNER_TEMP/out" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_$KEY_ID.p8" \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" > "$RUNNER_TEMP/export.log" 2>&1 || {
+              grep -E "error|Error|failed|Failed" "$RUNNER_TEMP/export.log" | sort -u | head -n 25 | while IFS= read -r l; do echo "::error::${l:0:900}"; done
+              tail -n 40 "$RUNNER_TEMP/export.log"; exit 1; }
+          tail -n 15 "$RUNNER_TEMP/export.log"
+          grep -E "Upload succeeded|EXPORT SUCCEEDED|Uploaded" "$RUNNER_TEMP/export.log" | head -5 | while IFS= read -r l; do echo "::notice::$l"; done
+
+      - name: 키 파일 지우기
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/keys"
