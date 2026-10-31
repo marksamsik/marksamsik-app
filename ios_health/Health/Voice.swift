@@ -22,6 +22,7 @@ final class Voice {
     private var onDevice = false      // 이번 시도가 기기 안 인식인지
     private var retried = false       // 기기 안 인식 실패 → 서버 인식으로 한 번 더 시도했는지
     private var gen = 0               // 시도 번호: 취소된 앞 시도의 늦은 결과를 버림
+    private var buffers = 0           // 진단: 마이크에서 받은 소리 묶음 수(0이면 마이크 입력이 안 들어온 것)
 
     func start() {
         stop()
@@ -80,7 +81,11 @@ final class Voice {
         let fmt = input.outputFormat(forBus: 0)
         guard fmt.sampleRate > 0, fmt.channelCount > 0 else { fail("마이크를 열지 못했어요."); return }
         input.removeTap(onBus: 0)
-        input.installTap(onBus: 0, bufferSize: 1024, format: fmt) { [weak r] buf, _ in r?.append(buf) }
+        buffers = 0
+        input.installTap(onBus: 0, bufferSize: 1024, format: fmt) { [weak self, weak r] buf, _ in
+            r?.append(buf)
+            DispatchQueue.main.async { self?.buffers += 1 }
+        }
         engine.prepare()
         do { try engine.start() } catch { fail("마이크를 열지 못했어요."); return }
 
@@ -94,7 +99,7 @@ final class Voice {
         }
         // 안드로이드처럼 말이 멈추면 저절로 끝: 처음 5초 동안 아무 말 없으면 끝, 말한 뒤 1.5초 조용하면 끝, 최대 15초
         cap = Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { [weak self] _ in self?.finish() }
-        armSilence(5)
+        armSilence(6)
     }
 
     private func handle(_ result: SFSpeechRecognitionResult?, _ error: Error?) {
@@ -124,7 +129,7 @@ final class Voice {
     /// 실패 원인을 알 수 있게 안내 + 코드(문의할 때 캡처로 보면 원인을 바로 앎)
     static func message(_ e: NSError) -> String {
         let code = "(\(e.domain) \(e.code))"
-        if isNoSpeech(e) { return "잘 못 들었어요. 다시 눌러 주세요." }
+        if isNoSpeech(e) { return "잘 못 들었어요. 다시 눌러 주세요. " + code }
         if e.domain == "kLSRErrorDomain" && e.code == 201 {
             return "아이폰 받아쓰기가 꺼져 있어요. 설정 › 일반 › 키보드 › 「받아쓰기 활성화」를 켜 주세요. " + code
         }
@@ -136,7 +141,18 @@ final class Voice {
 
     private func armSilence(_ sec: TimeInterval) {
         silence?.invalidate()
-        silence = Timer.scheduledTimer(withTimeInterval: sec, repeats: false) { [weak self] _ in self?.finish() }
+        silence = Timer.scheduledTimer(withTimeInterval: sec, repeats: false) { [weak self] _ in
+            guard let self = self, !self.finished else { return }
+            // 기기 안 인식이 아무 글자도 못 내면 애플 서버 인식으로 한 번 더(말은 다시 해야 함)
+            if self.last.isEmpty && self.onDevice && !self.retried && !Self.onDeviceOnly {
+                self.retried = true
+                self.cleanup()
+                self.onEvent?("part", "다시 한 번 말해 주세요…")
+                self.begin(preferOnDevice: false)
+                return
+            }
+            self.finish()
+        }
     }
 
     private func finish() {
@@ -144,7 +160,7 @@ final class Voice {
         finished = true
         let t = last.trimmingCharacters(in: .whitespacesAndNewlines)
         cleanup()
-        if t.isEmpty { onEvent?("err", "잘 못 들었어요. 다시 눌러 주세요.") } else { onEvent?("final", t) }
+        if t.isEmpty { onEvent?("err", "잘 못 들었어요. 다시 눌러 주세요. (진단: 소리 \(buffers) · \(onDevice ? "기기 안" : "서버") 인식)") } else { onEvent?("final", t) }
     }
 
     private func fail(_ msg: String) {
