@@ -25,7 +25,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.marksamsik.health
-        PRODUCT_NAME: Health
+        PRODUCT_NAME: MarksamsikHealth   # 「Health」는 애플 건강 앱과 겹쳐 업로드 거절(90129) → 고유한 이름
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
@@ -36,6 +36,7 @@ targets:
       path: Health/Info.plist
       properties:
         CFBundleDisplayName: 마크삼식 헬스 기록
+        CFBundleName: MarksamsikHealth
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSRequiresIPhoneOS: true
