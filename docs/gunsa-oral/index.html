@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>건운사 실기구술 오늘의 문제</title>
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="description" content="건강운동관리사 2차 실기·구술 — 매일 카드 한 장, 말하면서 시연하고 키워드로 스스로 채점">
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#1f2328;--sub:#646d77;--main:#5f6b78;--main2:#404a55;--line:#dcdfe4;--chip:#eceef1;--gold:#c99a2e;--goldbg:#fff7e2;--ok:#1f8a4c;--okbg:#e9f7ef;--ng:#c0392b;--ngbg:#fdecea}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131518;--card:#1c1f23;--ink:#eceef1;--sub:#a5adb6;--main:#9aa3ad;--main2:#c9d0d7;--line:#30353b;--chip:#262a2f;--gold:#e0b44a;--goldbg:#2e2715;--ok:#55c98a;--okbg:#173225;--ng:#ff8a7a;--ngbg:#3a1d1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.6;word-break:keep-all}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;gap:12px;align-items:center;margin:4px 0 14px}
+.face{width:58px;height:58px;border-radius:50%;border:3px solid #d4a017;object-fit:cover;flex:none;background:#333}
+h1{font-size:21px;margin:0;line-height:1.3}h1 b{color:var(--main)}
+.date{font-size:13px;color:var(--sub);margin-top:2px}
+.visit{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:5px;font-size:12px;color:var(--sub)}.visit b{color:var(--ink);font-size:13px;margin:0 2px}.visit .vsn{display:inline-flex;align-items:center;padding:2px 9px;border:1px solid rgba(31,138,76,.4);border-radius:999px;background:rgba(31,138,76,.08);color:var(--ok)}.visit .vsn i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2fae66;margin-right:6px;animation:vpulse 1.6s infinite}@keyframes vpulse{0%{box-shadow:0 0 0 0 rgba(47,174,102,.55)}100%{box-shadow:0 0 0 6px rgba(47,174,102,0)}}
+.admbtn{margin-left:auto;align-self:flex-start;flex:none;font-size:12px;font-weight:700;color:var(--sub);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:4px 10px;text-decoration:none;white-space:nowrap}
+.intro{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;margin-bottom:14px}.intro b{color:var(--main2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.top{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+.no{background:var(--main);color:#fff;font-weight:700;border-radius:999px;padding:2px 10px;font-size:13px}
+.tag{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.gs{font-size:12px;font-weight:700;color:#fff;background:#d4a017;border-radius:6px;padding:1px 7px}.ga{font-size:12px;font-weight:700;color:#fff;background:#5f6b78;border-radius:6px;padding:1px 7px}
+.ttl{font-size:17px;font-weight:700;margin:2px 0 10px;line-height:1.45}
+.qbox{border:2px solid var(--gold);background:var(--goldbg);border-radius:14px;padding:10px 12px;margin:0 0 10px}
+.qbox small{display:block;font-weight:700;color:var(--gold);font-size:12.5px;margin-bottom:2px}
+.qbox p{margin:0;font-size:16px;font-weight:700}
+.how{font-size:13px;color:var(--sub);margin:0 0 10px}
+.timer{display:flex;gap:8px;align-items:center;margin:0 0 10px}
+.timer button{border:1.5px solid var(--main);background:transparent;color:var(--main2);border-radius:999px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}
+.timer b{font-size:20px;font-variant-numeric:tabular-nums;min-width:58px;color:var(--main2)}.timer b.end{color:var(--ng)}
+.open{display:block;width:100%;margin:8px 0 0;padding:11px;border-radius:12px;border:1.5px dashed var(--main);background:transparent;color:var(--main2);font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.sec{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;font-size:14.5px}.sec.show{display:block}
+.sec h4{margin:12px 0 6px;font-size:14px;color:var(--main2)}.sec h4:first-child{margin-top:0}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s}ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 34px;border-bottom:1px solid var(--line)}ol.steps li:last-child{border-bottom:0}
+ol.steps li:before{content:counter(s);position:absolute;left:0;top:7px;width:24px;height:24px;border-radius:50%;background:var(--chip);color:var(--main2);font-weight:700;font-size:13px;text-align:center;line-height:24px}
+ol.steps li b{display:block;font-size:13px;color:var(--main)}
+.say{background:var(--okbg);border-radius:12px;padding:10px 12px;line-height:1.75}
+.kws{display:flex;flex-wrap:wrap;gap:6px}
+.kws button{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.kws button.on{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.kres{font-size:14px;font-weight:700;margin-top:6px;color:var(--main2)}
+.pt{background:var(--chip);border-radius:10px;padding:8px 12px}
+ul.sm,ul.dd{margin:0;padding-left:18px}ul.sm li,ul.dd li{margin:3px 0}
+ul.dd li{color:var(--ng)}
+.tw{overflow-x:auto}table{border-collapse:collapse;font-size:13px;width:100%;margin:4px 0}th,td{border:1px solid var(--line);padding:5px 6px;vertical-align:top;text-align:left}th{background:var(--chip)}
+details{margin-top:10px}summary{cursor:pointer;font-weight:700;color:var(--main2);font-size:14px}
+.tx p{margin:6px 0}
+.src{font-size:12px;color:var(--sub);margin-top:10px}
+.closed{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 16px;text-align:center;font-size:15px}
+.silver{background:linear-gradient(135deg,#6f7a86,#aeb6bf);color:#fff;border-radius:16px;padding:14px 16px;margin-top:20px}
+.silver b{font-size:17px}.silver .soon{display:inline-block;background:#fff;color:#4a5560;font-weight:700;font-size:12px;border-radius:999px;padding:1px 9px;margin-left:6px;vertical-align:2px}
+.silver ul{margin:6px 0 0;padding-left:18px;font-size:13.5px}
+.books{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-top:14px;display:grid;gap:8px}.books a{display:block;text-decoration:none;border-radius:10px;padding:10px 12px;background:var(--chip);color:var(--ink);font-weight:700;font-size:14.5px;border:1px solid var(--line)}
+.links{display:grid;gap:8px;margin-top:14px}.links a{display:block;text-decoration:none;text-align:center;border-radius:12px;padding:12px;font-weight:700;font-size:15px}
+.play{background:#1a7f37;color:#fff}.web{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.foot{font-size:12px;color:var(--sub);margin-top:18px}
+.pvbar{background:#fff3cd;color:#7a5a00;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <img class="face" alt="킹콩" src="data:image/jpeg;base64,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">
+  <div>
+    <h1>건운사 실기구술 <b>오늘의 문제</b></h1>
+    <div class="date" id="date"></div>
+    <div class="visit" id="visit" hidden aria-live="polite"></div>
+  </div>
+  <a class="admbtn" href="https://script.google.com/macros/s/AKfycbxdqD3olAW-hilMrZaEDbLR14yOXMOVkfntqNG9rUGaESygg805jSo8mqLmm-3kCpqk/exec?fn=admin" target="_blank" rel="noopener" title="관리자 모드(마크삼식 계정만)">⚙ 관리자</a>
+</header>
+<div class="intro">🎤 매일 자정에 <b>실기·구술 카드 한 장</b>이 새로 나와요. <b>지난 카드는 다시 볼 수 없어요</b> — 오늘 카드는 오늘 끝내세요. 실제 시험처럼 <b>먼저 소리 내어 시연하고 답한 뒤</b> 대본과 모범 답을 열어 보세요. 답을 연 뒤 내가 말한 <b>채점 키워드</b>를 눌러 스스로 채점해요.</div>
+
+<div id="main"><div class="closed">불러오는 중…</div></div>
+
+<div class="silver">
+  <b>⚪ 마크삼식 건운사 실기구술 앱</b><span class="soon">비공개 테스트 중</span>
+  <ul>
+    <li>실기·구술 카드 351장 — 출제영역 9개(1A~3C) 순서 그대로</li>
+    <li>고사실 모의 9분 · 🎙️ 말로 답하면 키워드로 자가채점</li>
+    <li>초단기 암기카드 · 🎧 전체 듣기 · 한장포스터·자가 채점표</li>
+  </ul>
+</div>
+
+<div class="books"><b>📘 킹콩 건운사 실기·구술 전자책</b>
+  <a href="https://play.google.com/store/books/details?id=2UwlEgAAQBAJ" target="_blank" rel="noopener">📗 2027 킹콩 건강운동관리사 실기·구술 — 이 페이지 카드의 원본 (구글 플레이 도서)</a>
+</div>
+<div class="links">
+  <a class="play" href="https://play.google.com/store/apps/details?id=com.marksamsik.portal" target="_blank" rel="noopener">▶ 마크삼식 보디빌딩 앱 (Play 스토어)</a>
+  <a class="web" href="https://marksamsik.github.io/marksamsik-app/" target="_blank" rel="noopener">🌐 마크삼식 공식 포털 (웹)</a>
+</div>
+<div class="foot">마크삼식(킹콩) 『2027 건강운동관리사 실기·구술』의 카드(독립 창작)예요. S급은 공개 회상자료에 나온 항목 표시이며 실제 시험 문제가 아니에요. 시험 일정·평가기준은 그해 시행공고로 다시 확인해 주세요. 시험 주관 기관과 관계없는 개인 학습 자료이며, 카드 내용의 무단 복제·배포를 금합니다.</div>
+</div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbxdqD3olAW-hilMrZaEDbLR14yOXMOVkfntqNG9rUGaESygg805jSo8mqLmm-3kCpqk/exec';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let VID='';try{VID=localStorage.getItem('gor_vid')||'';if(!VID){VID=Math.random().toString(36).slice(2,12);localStorage.setItem('gor_vid',VID)}}catch(e){VID='x'+Math.random().toString(36).slice(2,8)}
+const PVK=(new URLSearchParams(location.search).get('pv')||'').replace(/[^a-zA-Z0-9]/g,'');
+function ping(ev,id){if(PVK)return;try{new Image().src=API+'?fn=hit&e='+ev+'&id='+encodeURIComponent(id||'')+'&v='+VID+'&t='+Date.now()}catch(e){}}
+function jsonp(url){return new Promise((ok,no)=>{const cb='cb'+Math.random().toString(36).slice(2,9),s=document.createElement('script');const t=setTimeout(()=>{clean();no(new Error('timeout'))},20000);function clean(){clearTimeout(t);delete window[cb];s.remove()}window[cb]=d=>{clean();ok(d)};s.onerror=()=>{clean();no(new Error('load'))};s.src=url+(url.indexOf('?')<0?'?':'&')+'callback='+cb;document.body.appendChild(s)})}
+const WD=['일','월','화','수','목','금','토'];
+function fmtDate(d){const m=String(d||'').match(/(\d{4})-(\d{2})-(\d{2})/);if(!m)return '';const t=new Date(+m[1],+m[2]-1,+m[3]);return `${+m[2]}월 ${+m[3]}일 (${WD[t.getDay()]})`}
+let C=null,KON={},KP=0,TM=null;
+function render(o){
+  const M=document.getElementById('main');
+  if(!o||o.status!=='open'||!o.item){M.innerHTML='<div class="closed">🛠️ 오늘의 문제는 곧 시작해요.<br><small style="color:var(--sub)">시작하면 매일 자정에 카드가 한 장씩 열려요.</small></div>';return}
+  C=o.item;KON={};KP=0;
+  document.getElementById('date').textContent=fmtDate(o.date)+' · 오늘의 카드';
+  const g=C.g==='S'?'<span class="gs">S급</span>':'<span class="ga">'+esc(C.g)+'급</span>';
+  const steps=(C.pr||[]).map(s=>`<li>${s[0]?'<b>'+esc(s[0])+'</b>':''}${esc(s[1])}</li>`).join('');
+  const tb=(C.tb||[]).length?`<div class="tw"><table>${C.tb.map((r,i)=>'<tr>'+r.map(c=>i?'<td>'+esc(c)+'</td>':'<th>'+esc(c)+'</th>').join('')+'</tr>').join('')}</table></div>`:'';
+  const tx=(C.tx||[]).map(t=>'<p>'+esc(t)+'</p>').join('');
+  M.innerHTML=`${o.preview?'<div class="pvbar">👀 관리자 미리보기 — 아직 공개 전이에요</div>':''}
+  <div class="card">
+    <div class="top"><span class="no">${esc(C.id)}</span>${g}<span class="tag">${esc(C.pn)}</span><span class="tag">${esc(C.a)} ${esc(C.an)}</span></div>
+    <div class="ttl">${esc(C.t)}</div>
+    <div class="qbox"><small>🗣️ 구술 질문</small><p>${esc(C.q)}</p></div>
+    <p class="how">① 대상자가 앞에 있다고 생각하고 <b>말하면서 시연</b> → ② 질문에 <b>30초 안에</b> 구술로 답 → ③ 아래를 열어 확인</p>
+    <div class="timer"><button id="tmb">⏱ 30초 구술 타이머</button><b id="tmv">0:30</b></div>
+    <button class="open" id="b1">🎬 실기 시연 대본 열기</button>
+    <div class="sec" id="s1"><h4>🎬 단계별 실기 대본</h4><ol class="steps">${steps}</ol></div>
+    <button class="open" id="b2">💬 모범 구술답변 · 채점 키워드 열기</button>
+    <div class="sec" id="s2">
+      <h4>💬 모범 구술답변</h4><div class="say">${esc(C.ans)}</div>
+      <h4>✅ 채점 키워드 — 내가 말한 것을 눌러 보세요</h4><div class="kws" id="kws">${(C.k||[]).map((k,i)=>`<button data-i="${i}">${esc(k)}</button>`).join('')}</div><div class="kres" id="kres"></div>
+      ${C.pt?`<h4>🎯 평가포인트</h4><div class="pt">${esc(C.pt)}</div>`:''}
+      ${(C.sm||[]).length?`<h4>📌 핵심요약</h4><ul class="sm">${C.sm.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul>`:''}
+      ${(C.d||[]).length?`<h4>⚠️ 감점 주의</h4><ul class="dd">${C.d.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul>`:''}
+      ${tb||tx?`<details><summary>📖 상세해설 펼쳐 보기</summary>${tb}<div class="tx">${tx}</div></details>`:''}
+      ${C.src?`<div class="src">📎 근거: ${esc(C.src)}</div>`:''}
+    </div>
+  </div>`;
+  const op=(b,s,ev)=>{document.getElementById(b).onclick=()=>{const el=document.getElementById(s),on=!el.classList.contains('show');el.classList.toggle('show',on);document.getElementById(b).textContent=on?document.getElementById(b).textContent.replace('열기','닫기'):document.getElementById(b).textContent.replace('닫기','열기');if(on)ping(ev,C.id)}};
+  op('b1','s1','p');op('b2','s2','a');
+  document.getElementById('kws').onclick=e=>{const b=e.target.closest('button');if(!b)return;const i=b.dataset.i;KON[i]=!KON[i];b.classList.toggle('on',KON[i]);const n=Object.values(KON).filter(Boolean).length,t=C.k.length;document.getElementById('kres').textContent=`키워드 ${n} / ${t}`+(n===t?' · 🎉 다 말했어요!':n>=Math.ceil(t*0.7)?' · 👍 70% 넘었어요':'');if(n===1&&!KP){KP=1;ping('c',C.id)}};
+  document.getElementById('tmb').onclick=()=>{const v=document.getElementById('tmv'),b=document.getElementById('tmb');if(TM){clearInterval(TM);TM=null;b.textContent='⏱ 30초 구술 타이머';v.textContent='0:30';v.classList.remove('end');return}let s=30;b.textContent='■ 멈추기';v.classList.remove('end');TM=setInterval(()=>{s--;v.textContent='0:'+String(Math.max(s,0)).padStart(2,'0');if(s<=0){clearInterval(TM);TM=null;v.textContent='끝!';v.classList.add('end');b.textContent='⏱ 다시 30초'}},1000)};
+}
+async function load(){
+  try{const o=await jsonp(API+'?fn=data'+(PVK?'&pv='+PVK:''));render(o);if(o&&o.item)ping('v',o.item.id)}
+  catch(e){document.getElementById('main').innerHTML='<div class="closed">⚠️ 카드를 불러오지 못했어요. 잠시 뒤 새로고침해 주세요.</div>'}
+}
+function visit(first){
+  if(PVK)return;
+  let n='0';try{const d=new Date(Date.now()+324e5).toISOString().slice(0,10);if(first&&localStorage.getItem('gor_vday')!==d){localStorage.setItem('gor_vday',d);n='1'}}catch(e){}
+  jsonp(API+'?fn=visit&v='+VID+'&n='+n).then(r=>{if(!r||r.total==null)return;const el=document.getElementById('visit');el.innerHTML=`<span class="vsn"><i></i>지금 <b>${r.online}</b>명</span> 누적 <b>${r.total}</b> · 오늘 <b>${r.today}</b>`;el.hidden=false}).catch(()=>{});
+}
+load();visit(true);setInterval(()=>{if(!document.hidden)visit(false)},120000);
+</script>
+</body>
+</html>
