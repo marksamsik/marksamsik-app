@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>킹콩 스경사 긴급점검</title>
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#fff8f0;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+  body{display:flex;flex-direction:column}
+  .bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(120deg,#d9741a,#f08a24);color:#fff}
+  .bar b{font-size:15px;font-weight:900;white-space:nowrap}
+  .tabs{display:flex;gap:6px;margin-left:auto}
+  .tabs a{color:#fff;text-decoration:none;font-weight:800;font-size:13px;border-radius:18px;padding:6px 12px;background:rgba(255,255,255,.18);white-space:nowrap}
+  .tabs a.on{background:#fff;color:#b4560f}
+  #f{display:block;border:0;width:100%;flex:1}
+  #msg{color:#6b6456;text-align:center;padding:10px 20px;font-size:13px}
+  #msg a{color:#b4560f}
+  @media(max-width:380px){.bar b{font-size:13px}.tabs a{font-size:12px;padding:5px 9px}}
+</style>
+</head>
+<body>
+<div class="bar"><b>🦍 스경사 긴급점검</b>
+  <div class="tabs"><a href="?d=note" id="t-note">셤장노트</a><a href="?d=k50" id="t-k50">기출 빈출 50제</a></div></div>
+<iframe id="f" title="킹콩 스경사 긴급점검" referrerpolicy="no-referrer"></iframe>
+<div id="msg" hidden>화면이 비어 있으면 <a id="direct" href="#" target="_blank" rel="noopener">새 창에서 열기</a></div>
+<script>
+  var PORTAL = "https://script.google.com/macros/s/AKfycbw-dRF0EiEqvy8M_lXX17uN5KyoRr_If5ahQ7DTslbyMmTjZc8NKDEOP2kEc9k8kAfwaQ/exec";
+  var m = /[?&]d=(note|k50)/.exec(window.location.search);
+  var d = m ? m[1] : "note";
+  document.getElementById("t-" + d).className = "on";
+  document.getElementById("f").src = PORTAL + "?d=" + d;
+  document.getElementById("direct").href = PORTAL + "?d=" + d;
+  setTimeout(function(){ document.getElementById("msg").hidden = false; }, 8000);
+</script>
+</body>
+</html>
