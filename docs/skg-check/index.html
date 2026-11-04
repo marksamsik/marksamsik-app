@@ -15,6 +15,12 @@
   .tabs{display:flex;gap:6px;margin-left:auto}
   .tabs a{color:#fff;text-decoration:none;font-weight:800;font-size:13px;border-radius:18px;padding:6px 12px;background:rgba(255,255,255,.18);white-space:nowrap}
   .tabs a.on{background:#fff;color:#b4560f}
+  .sub{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#fff1e0;border-bottom:1px solid #f3d2ac;font-size:12px;color:#6b5a48;min-height:30px}
+  .sub b{color:#2b2017;font-size:13px;margin:0 2px}
+  .vsn{display:inline-flex;align-items:center;padding:1px 9px;border:1px solid rgba(31,138,76,.4);border-radius:999px;background:rgba(31,138,76,.08);color:#1f8a4c}
+  .vsn i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2fae66;margin-right:6px;animation:vp 1.6s infinite}
+  @keyframes vp{0%{box-shadow:0 0 0 0 rgba(47,174,102,.55)}100%{box-shadow:0 0 0 6px rgba(47,174,102,0)}}
+  .adm{margin-left:auto;flex:none;font-size:12px;font-weight:700;color:#6b5a48;background:#fff;border:1px solid #f3d2ac;border-radius:999px;padding:3px 10px;text-decoration:none;white-space:nowrap}
   #f{display:block;border:0;width:100%;flex:1}
   #msg{color:#6b6456;text-align:center;padding:10px 20px;font-size:13px}
   #msg a{color:#b4560f}
@@ -24,6 +30,7 @@
 <body>
 <div class="bar"><b>🦍 스경사 긴급점검</b>
   <div class="tabs"><a href="?d=note" id="t-note">셤장노트</a><a href="?d=k50" id="t-k50">기출 빈출 50제</a></div></div>
+<div class="sub"><span id="visit" hidden></span><a class="adm" id="adm" href="#" target="_blank" rel="noopener" title="관리자(마크삼식 계정만)">⚙ 관리자</a></div>
 <iframe id="f" title="킹콩 스경사 긴급점검" referrerpolicy="no-referrer"></iframe>
 <div id="msg" hidden>화면이 비어 있으면 <a id="direct" href="#" target="_blank" rel="noopener">새 창에서 열기</a></div>
 <script>
@@ -33,6 +40,27 @@
   document.getElementById("t-" + d).className = "on";
   document.getElementById("f").src = PORTAL + "?d=" + d;
   document.getElementById("direct").href = PORTAL + "?d=" + d;
+  document.getElementById("adm").href = PORTAL + "?fn=admin";
+  var VID = "";
+  try { VID = localStorage.getItem("skgc_vid") || ""; if (!VID) { VID = Math.random().toString(36).slice(2, 12); localStorage.setItem("skgc_vid", VID); } } catch (e) { VID = "x" + Math.random().toString(36).slice(2, 8); }
+  function jsonp(url, ok) {
+    var cb = "cb" + Math.random().toString(36).slice(2, 9), s = document.createElement("script");
+    window[cb] = function (d) { delete window[cb]; s.remove(); ok(d); };
+    s.onerror = function () { delete window[cb]; s.remove(); };
+    s.src = url + "&callback=" + cb; document.body.appendChild(s);
+  }
+  function visit(first) {
+    var n = "0";
+    try { var dd = new Date(Date.now() + 324e5).toISOString().slice(0, 10); if (first && localStorage.getItem("skgc_vday") !== dd) { localStorage.setItem("skgc_vday", dd); n = "1"; } } catch (e) {}
+    jsonp(PORTAL + "?fn=visit&v=" + VID + "&n=" + n, function (r) {
+      if (!r || r.total == null) return;
+      var el = document.getElementById("visit");
+      el.innerHTML = '<span class="vsn"><i></i>지금 <b>' + r.online + '</b>명</span> 누적 <b>' + r.total + '</b> · 오늘 <b>' + r.today + '</b>';
+      el.hidden = false;
+    });
+  }
+  visit(true);
+  setInterval(function () { if (!document.hidden) visit(false); }, 120000);
   var loaded = false;
   document.getElementById("f").onload = function(){ loaded = true; document.getElementById("msg").hidden = true; };
   setTimeout(function(){ if (!loaded) document.getElementById("msg").hidden = false; }, 10000);
