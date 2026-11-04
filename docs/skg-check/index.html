@@ -10,12 +10,14 @@
 <style>
   html,body{margin:0;padding:0;height:100%;background:#fff8f0;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
   body{display:flex;flex-direction:column}
-  .bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(120deg,#d9741a,#f08a24);color:#fff}
+  .bar{padding:8px 10px;background:linear-gradient(120deg,#d9741a,#f08a24);color:#fff}
+  .in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:8px}
   .bar b{font-size:15px;font-weight:900;white-space:nowrap}
   .tabs{display:flex;gap:6px;margin-left:auto}
   .tabs a{color:#fff;text-decoration:none;font-weight:800;font-size:13px;border-radius:18px;padding:6px 12px;background:rgba(255,255,255,.18);white-space:nowrap}
   .tabs a.on{background:#fff;color:#b4560f}
-  .sub{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#fff1e0;border-bottom:1px solid #f3d2ac;font-size:12px;color:#6b5a48;min-height:30px}
+  .sub{padding:5px 10px;background:#fff1e0;border-bottom:1px solid #f3d2ac;font-size:12px;color:#6b5a48;}
+  .sub .in{min-height:22px}
   .sub b{color:#2b2017;font-size:13px;margin:0 2px}
   .vsn{display:inline-flex;align-items:center;padding:1px 9px;border:1px solid rgba(31,138,76,.4);border-radius:999px;background:rgba(31,138,76,.08);color:#1f8a4c}
   .vsn i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2fae66;margin-right:6px;animation:vp 1.6s infinite}
@@ -28,9 +30,9 @@
 </style>
 </head>
 <body>
-<div class="bar"><b>🦍 스경사 긴급점검</b>
-  <div class="tabs"><a href="?d=note" id="t-note">셤장노트</a><a href="?d=k50" id="t-k50">기출 빈출 50제</a></div></div>
-<div class="sub"><span id="visit" hidden></span><a class="adm" id="adm" href="#" target="_blank" rel="noopener" title="관리자(마크삼식 계정만)">⚙ 관리자</a></div>
+<div class="bar"><div class="in"><b>🦍 스경사 긴급점검</b>
+  <div class="tabs"><a href="?d=note" id="t-note">셤장노트</a><a href="?d=k50" id="t-k50">기출 빈출 50제</a></div></div></div>
+<div class="sub"><div class="in"><span id="visit" hidden></span><a class="adm" id="adm" href="#" target="_blank" rel="noopener" title="관리자(마크삼식 계정만)">⚙ 관리자</a></div></div>
 <iframe id="f" title="킹콩 스경사 긴급점검" referrerpolicy="no-referrer"></iframe>
 <div id="msg" hidden>화면이 비어 있으면 <a id="direct" href="#" target="_blank" rel="noopener">새 창에서 열기</a></div>
 <script>
