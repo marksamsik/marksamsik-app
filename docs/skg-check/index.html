@@ -33,7 +33,9 @@
   document.getElementById("t-" + d).className = "on";
   document.getElementById("f").src = PORTAL + "?d=" + d;
   document.getElementById("direct").href = PORTAL + "?d=" + d;
-  setTimeout(function(){ document.getElementById("msg").hidden = false; }, 8000);
+  var loaded = false;
+  document.getElementById("f").onload = function(){ loaded = true; document.getElementById("msg").hidden = true; };
+  setTimeout(function(){ if (!loaded) document.getElementById("msg").hidden = false; }, 10000);
 </script>
 </body>
 </html>
