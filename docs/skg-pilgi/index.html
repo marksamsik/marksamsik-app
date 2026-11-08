@@ -55,7 +55,7 @@ h1{font-size:21px;margin:0;line-height:1.3}h1 b{color:var(--main)}
 .play{background:#1a7f37;color:#fff}.web{background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .foot{font-size:12px;color:var(--sub);margin-top:18px}
 .pvbar{background:#fff3cd;color:#7a5a00;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;margin-bottom:10px}
-</style>
+.fgi{margin:6px 0;background:#fff;border:1px solid var(--line,#eadfd6);border-radius:10px;padding:6px}.fgi img{display:block;width:100%;height:auto}.fgi figcaption{font-size:12px;color:var(--sub,#7a6a5a);text-align:center;margin-top:4px}</style>
 </head>
 <body>
 <div class="wrap">
@@ -103,7 +103,7 @@ const WD=['일','월','화','수','목','금','토'],CIR=['①','②','③','④
 function fmtDate(d){const m=String(d||'').match(/(\d{4})-(\d{2})-(\d{2})/);if(!m)return '';const t=new Date(+m[1],+m[2]-1,+m[3]);return `${+m[2]}월 ${+m[3]}일 (${WD[t.getDay()]})`}
 let D=null,CUR=0,ANS={};
 function exHTML(ls){let h='',tb=[],li=[];const fl=()=>{if(tb.length){h+=`<div class="tw"><table>${tb.map((r,i)=>'<tr>'+r.map(c=>i?'<td>'+esc(c)+'</td>':'<th>'+esc(c)+'</th>').join('')+'</tr>').join('')}</table></div>`;tb=[]}if(li.length){h+='<ul>'+li.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';li=[]}};
-  (ls||[]).forEach(l=>{if(l.startsWith('표|')){if(li.length)fl();tb.push(l.slice(2).split('|').map(x=>x.trim()))}else if(l.startsWith('• ')){if(tb.length)fl();li.push(l.slice(2))}else{fl();if(l.startsWith('💡 '))h+='<div class="note">'+esc(l)+'</div>';else if(l.startsWith('[그림] '))h+='<div class="fig">🖼️ '+esc(l.slice(5))+' — 그림은 앱·교재에서 볼 수 있어요</div>';else h+='<p>'+esc(l)+'</p>'}});fl();return h}
+  (ls||[]).forEach(l=>{if(l.startsWith('표|')){if(li.length)fl();tb.push(l.slice(2).split('|').map(x=>x.trim()))}else if(l.startsWith('• ')){if(tb.length)fl();li.push(l.slice(2))}else{fl();if(l.startsWith('💡 '))h+='<div class="note">'+esc(l)+'</div>';else if(l.startsWith('[그림] '))h+='<div class="fig">🖼️ '+esc(l.slice(5))+' — 그림은 앱·교재에서 볼 수 있어요</div>';else if(l.startsWith('img|')){const q=l.split('|');h+='<figure class="fgi"><img src="'+esc(q[1])+'" alt="'+esc(q[2]||'도해')+'" loading="lazy"><figcaption>🖼️ '+esc(q[2]||'')+'</figcaption></figure>'}else if(l.startsWith('⚠️ '))h+='<div class="note">'+esc(l)+'</div>';else h+='<p>'+esc(l)+'</p>'}});fl();return h}
 function card(x,i,day){
   const key=day+'_'+x.id,st=ANS[key];
   const g=`<span class="g${esc(x.g)}">${esc(x.g)}급</span>`;
