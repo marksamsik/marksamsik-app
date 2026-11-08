@@ -39,7 +39,8 @@ button.chk.on{background:var(--sub)}
 .ans.show{display:block}
 .ans h4{margin:8px 0 4px;font-size:13.5px;color:var(--main2)}
 .calc .ans h4{color:var(--calc)}
-.one{background:var(--chip);border-radius:10px;padding:8px 10px;font-weight:600}
+.one{background:var(--chip);border-radius:10px;padding:8px 10px;font-weight:600;white-space:pre-line}
+.fg{margin:6px 0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px}.fg img{display:block;width:100%;height:auto}.fg figcaption{font-size:12px;color:var(--sub,#7a6a5a);text-align:center;margin-top:4px}
 .calc .one{background:var(--calcbg)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips span{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px}
@@ -92,7 +93,7 @@ ol.kt li:last-child{border-bottom:0}
   <b>🟠 마크삼식 스경사 앱</b><span class="soon">출시 예정</span>
   <div class="when">📅 2026년 10월 말 ~ 11월 초 Play 스토어 출시 예정 <small>(구글 심사에 따라 며칠 달라질 수 있어요)</small></div>
   <ul>
-    <li>실기 72문항 전체 모범답안과 채점 기준</li>
+    <li>실기 96주제 전체 모범답안과 채점 기준</li>
     <li>시간 재며 타이핑 연습 · 복습 · 실전 모의</li>
     <li>필기 기출 490문항 · 기본개념 · 듣기</li>
   </ul>
@@ -125,20 +126,28 @@ function srcBox(src){
     if(l.startsWith('📱'))return `<div>${esc(l)} <a href="${PLAY}" target="_blank" rel="noopener">앱 보기 ›</a></div>`;
     return `<div class="basis">${esc(l)}</div>`}).join('')}<div class="more">전체 모범답안은 교재에 있어요 · 앱은 출시 예정이에요</div></div>`;
 }
+const bd=s=>s.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+function figBox(fg){
+  const v=String(fg||'');if(!v)return '';const p=v.split('|');
+  if(p[0]==='img')return `<figure class="fg"><img src="${esc(p[1])}" alt="${esc(p[2]||'도해')}" loading="lazy"><figcaption>${esc(p[2]||'')}</figcaption></figure>`;
+  if(p[0]==='tbl'){const ls=v.slice(4).split('\n').filter(l=>l.trim()).map(l=>l.split('‖').map(c=>c.trim()));
+    return `<h4>🗂️ 한눈에 표</h4><div class="ma"><div class="tw"><table>${ls.map((r,i)=>`<tr>${r.map(c=>i?`<td>${esc(c)}</td>`:`<th>${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div></div>`}
+  return '';
+}
 function maBox(ma){
   const ls=String(ma||'').split('\n').filter(l=>l.trim());if(!ls.length)return '';
   let h='',tb=[];const flush=()=>{if(tb.length){h+=`<div class="tw"><table>${tb.map((r,i)=>`<tr>${r.map(c=>i?`<td>${esc(c)}</td>`:`<th>${esc(c)}</th>`).join('')}</tr>`).join('')}</table></div>`;tb=[]}};
-  ls.forEach(l=>{if(l.startsWith('‖')){tb.push(l.slice(1).split('‖'))}else{flush();h+=`<p>${esc(l)}</p>`}});flush();
+  ls.forEach(l=>{if(l.startsWith('‖')){tb.push(l.slice(1).split('‖'))}else if(l.startsWith('img|')){flush();h+=figBox(l)}else{flush();h+=`<p>${bd(esc(l))}</p>`}});flush();
   return `<h4>✍️ 모범답안 <small>(앱과 같은 답안)</small></h4><div class="ma">${h}</div>`;
 }
 function card(x,n){
   const kt=(x.kt||[]).map(r=>`<li>${r[0]?`<span class="pt">${esc(r[0])}</span>`:''}<span>${esc(r[1])}${r[2]?`<span class="warn">⚠️ ${esc(r[2])}</span>`:''}</span></li>`).join('');
-  return `<div class="q${x.calc?' calc':''}"><div class="top"><span class="no">${x.calc?'계산':'Q'+n}</span>${x.g?`<span class="g">${esc(x.g)}급</span>`:`<span class="g">🎯 실전</span>`}<span class="tag">${esc(x.chn)}</span><span class="tag">${esc(x.t)} · ${esc(x.p)}점 · 목표 ${esc(x.m)}분</span></div>
+  return `<div class="q${x.calc?' calc':''}"><div class="top"><span class="no">${x.calc?'계산':'Q'+n}</span>${x.g?`<span class="g">${esc(x.g)}${/^[SAB]$/.test(x.g)?'급':''}</span>`:`<span class="g">🎯 실전</span>`}<span class="tag">${esc(x.chn)}</span><span class="tag">${[x.t,x.p?x.p+'점':'',x.m?'목표 '+x.m+'분':''].filter(Boolean).map(esc).join(' · ')}</span></div>
   <div class="stem">${esc(x.q)}</div>${x.s?`<div class="subq">${esc(x.s)}</div>`:''}
   <textarea placeholder="내 답을 먼저 써 보세요 (저장되지 않아요)"></textarea>
   ${(x.k||[]).length?`<button class="hintb">💡 힌트 보기</button><div class="hintbox"><b>답에 꼭 들어갈 말</b><div class="chips">${x.k.map(c=>`<span>${esc(c)}</span>`).join('')}</div><small>이 말들을 넣어 문장으로 써 보세요.</small></div>`:''}
   <button class="chk" data-id="${esc(x.i)}">✅ 답변 확인</button>
-  <div class="ans">${x.a?`<h4>🎯 정답 핵심</h4><div class="one">${esc(x.a)}</div>`:''}
+  <div class="ans">${x.a?`<h4>🎯 정답 핵심</h4><div class="one">${bd(esc(x.a))}</div>`:''}
   ${maBox(x.ma)}
   ${(x.k||[]).length?`<h4>🔑 꼭 들어갈 말</h4><div class="chips">${x.k.map(c=>`<span>${esc(c)}</span>`).join('')}</div>`:''}
   ${kt?`<h4>📋 채점 포인트</h4><ol class="kt">${kt}</ol>`:''}
