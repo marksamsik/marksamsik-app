@@ -136,7 +136,7 @@ function bookLine(con){
 }
 function srcBox(src,con){
   const ls=String(src||'').split('\n').map(l=>l.trim()).filter(Boolean);if(!ls.length)return '';
-  return `<div class="srcb"><h4>📎 출처</h4>${ls.map(l=>l.startsWith('📘')?`<div>${esc(l)} <a href="${EB}" target="_blank" rel="noopener">해설집 보기 ›</a></div>`:l.startsWith('📱')?`<div>${esc(l)} <small>(출시 준비 중)</small></div>`:`<div style="color:var(--sub);font-size:12px">${esc(l)}</div>`).join('')}${bookLine(con)}</div>`;
+  return `<div class="srcb"><h4>📎 출처</h4>${ls.map(l=>l.startsWith('📘')?`<div>${esc(l)} <a href="${EB}" target="_blank" rel="noopener">해설집 보기 ›</a></div>`:l.startsWith('📱')?`<div>${esc(l)} <a href="https://play.google.com/store/apps/details?id=com.marksamsik.gunsa" target="_blank" rel="noopener">앱에서 보기 ›</a></div>`:`<div style="color:var(--sub);font-size:12px">${esc(l)}</div>`).join('')}${bookLine(con)}</div>`;
 }
 function card(x){
   const hk=kws(x.key);
