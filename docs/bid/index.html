@@ -122,7 +122,7 @@ function card(it){var t=TIER[it.tier]||'ref';var s=it.close||it.open;var gone=no
 function pass(it){var s=it.close||it.open,d=dday(s);
  if(F==='core')return it.tier==='핵심';if(F==='new')return !!it.new;if(F==='soon')return d!==null&&d<=3&&!nowPast(s);return true}
 function sortKey(it){var s=it.close||it.open;if(!s)return '9';return (nowPast(s)?'8':'0')+s}
-function render(){var items=(DATA.items||[]).slice().sort(function(a,b){return sortKey(a)<sortKey(b)?-1:1});
+function render(){var items=(DATA.items||[]).filter(function(i){return !nowPast(i.close||i.open)}).sort(function(a,b){return sortKey(a)<sortKey(b)?-1:1});
  var live=items.filter(function(i){return !nowPast(i.close||i.open)});
  document.getElementById('sNew').textContent=items.filter(function(i){return i.new}).length;
  document.getElementById('sCore').textContent=live.filter(function(i){return i.tier==='핵심'}).length;
