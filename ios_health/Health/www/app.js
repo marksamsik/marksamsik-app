@@ -57,6 +57,10 @@
   var RT = store.get('rt', []);         // 루틴
   function saveW() { store.set('w', W); }
   function saveCur() { store.set('cur', CUR); }
+  /* 11/28 스티브: 지난 날짜 운동 추가 — PDATE = 시작 전에 고른 날짜(비면 오늘) */
+  var PDATE = '';
+  function wDate() { return PDATE && PDATE < ymd() ? PDATE : ymd(); }
+  function setCurDate(d) { if (!CUR) return; CUR.date = d; if (d !== ymd()) CUR.resume = 1; else delete CUR.resume; saveCur(); }
 
   /* 초성 검색 */
   var CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
@@ -160,7 +164,9 @@
       if (stale()) h += '<div class="card stl"><b>⏰ ' + mdw(CUR.date) + ' 운동이 아직 열려 있어요</b><small>' + (curSets() ? curSets() + '세트 · ' + esc(CUR.items.filter(function (it) { return it.sets.length; }).map(function (it) { return EXM[it.ex] ? EXM[it.ex].n : '?'; }).join(' · ')) : '기록한 세트 없음') + '</small><div class="g3' + (curSets() ? '' : ' two') + '">' + (curSets() ? '<button class="btn g" id="stSave">🎉 오운완 저장</button>' : '') + '<button class="btn" id="stDel">🗑 지우기</button><button class="btn" id="stGo">▶ 이어서 하기</button></div></div>';
       h += '<div class="hero"><div class="fc"></div><div><small>킹콩 코치 한마디</small><b>' + esc(coachLines()[0]) + '</b></div></div>';
       h += '<div class="gymr"><span class="note" style="margin:0">📍</span>' + S.gyms.map(function (g) { return '<button class="chip' + (g.id === S.gym ? ' on' : '') + '" data-gym="' + g.id + '">' + esc(g.n) + '</button>'; }).join('') + '<button class="chip" id="gymAdd">＋ 헬스장</button></div>';
-      h += '<button class="big" id="startNew"><i>▶</i><div><b>오늘 운동 시작</b><small>운동을 고르면 지난번 무게·횟수가 자동으로 채워져요</small></div><em>›</em></button>';
+      var wd0 = wDate(), past0 = wd0 !== ymd();
+      h += '<div class="wdate' + (past0 ? ' past' : '') + '"><span>📅 <b>' + mdw(wd0) + '</b> ' + (past0 ? '지난 날짜에 기록해요' : '오늘') + '</span><label class="btn sm">날짜 바꾸기<input id="pDate" type="date" value="' + wd0 + '" max="' + ymd() + '"></label>' + (past0 ? '<button class="btn sm" id="pToday">오늘로</button>' : '') + '</div>';
+      h += '<button class="big" id="startNew"><i>▶</i><div><b>' + (past0 ? mdw(wd0) + ' 운동 기록하기' : '오늘 운동 시작') + '</b><small>운동을 고르면 지난번 무게·횟수가 자동으로 채워져요</small></div><em>›</em></button>';
       h += weekHTML();
       h += '<div class="card hb"><div class="h3" style="margin-top:0">🦍 오늘 어디 할까요?</div><p class="note" style="margin:0 0 8px">부위를 누르면 그 부위 운동만 골라 보여 줘요</p><div class="bodyw hbody" id="hBody"></div></div>';
       var lastW = W[W.length - 1];
@@ -180,6 +186,8 @@
       h += '<p class="note">🎙️ 위 마이크를 누르고 「벤치 60 10개 3세트」처럼 말해도 기록돼요.</p>';
       pg.innerHTML = h;
       $('startNew').onclick = function () { startWorkout([]); openPicker(); };
+      $('pDate').onchange = function () { var v = this.value; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return; if (v > ymd()) { toast('미래 날짜는 고를 수 없어요'); render(); return; } PDATE = v < ymd() ? v : ''; render(); if (PDATE) toast('📅 ' + mdw(PDATE) + ' 운동으로 기록해요'); };
+      if ($('pToday')) $('pToday').onclick = function () { PDATE = ''; render(); };
       pg.querySelectorAll('[data-gym]').forEach(function (b) { b.onclick = function () { switchGym(b.dataset.gym); render(); }; });
       $('gymAdd').onclick = gymSheet;
       if ($('startLast')) $('startLast').onclick = function () { startWorkout(lastW.items.map(function (it) { return it.ex; }), lastW.items.map(function (it) { return it.g || 0; }), lastW.items.map(function (it) { return it.gt || ''; })); };
@@ -194,6 +202,8 @@
     }
     var nSet = 0, vol = 0;
     CUR.items.forEach(function (it) { var e = EXM[it.ex]; it.sets.forEach(function (s) { nSet++; vol += setKg(s, e) * s.r; }); });
+    var pastC = CUR.date !== ymd();
+    h += '<div class="wdate' + (pastC ? ' past' : '') + '"><span>📅 <b>' + mdw(CUR.date) + '</b> ' + (pastC ? '운동으로 기록 중' : '오늘 운동') + '</span><label class="btn sm">날짜 바꾸기<input id="cDate" type="date" value="' + CUR.date + '" max="' + ymd() + '"></label></div>';
     h += '<div class="kpi"><div><b>' + elapsed() + '</b><small>운동 시간</small></div><div><b>' + nSet + '</b><small>완료 세트</small></div><div><b>' + Math.round(vol).toLocaleString() + '</b><small>볼륨(kg)</small></div></div>';
     h += CUR.items.map(function (it, i) {
       var e = EXM[it.ex]; if (!e) return '';
@@ -217,6 +227,7 @@
     $('addGrp').onclick = openGroupAdd;
     pg.querySelectorAll('[data-mv]').forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); moveEx(+b.dataset.mv, +b.dataset.d); }; });
     $('endW').onclick = endWorkout;
+    $('cDate').onchange = function () { var v = this.value; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return; if (v > ymd()) { toast('미래 날짜는 고를 수 없어요'); render(); return; } setCurDate(v); render(); toast('📅 ' + mdw(v) + ' 운동으로 바꿨어요'); };
     $('cancelW').onclick = function () { if (confirmBox('이번 운동 기록을 지울까요? (끝낸 운동은 그대로예요)')) { CUR = null; saveCur(); stopRest(); render(); } };
   }
   function confirmBox(m) { try { return window.confirm(m); } catch (e) { return true; } }
@@ -330,10 +341,12 @@
   }
   function startWorkout(exIds, gs, gts) {
     if (stale() && curSets() && !confirmBox(mdw(CUR.date) + ' 운동(' + curSets() + '세트)이 아직 저장되지 않았어요. 지우고 새로 시작할까요?\n(저장하려면 취소 → 위 「🎉 오운완 저장」)')) return;
-    CUR = { id: Date.now(), date: ymd(), start: Date.now(), at: 0, gym: S.gym, items: normG(exIds.map(function (x, k) { var o = { ex: x, sets: [] }; if (gs && gs[k]) { o.g = gs[k]; if (gts && gts[k]) o.gt = gts[k]; } return o; }).filter(function (o) { return EXM[o.ex]; })) };
+    var dd = wDate(); PDATE = '';
+    CUR = { id: Date.now(), date: dd, start: Date.now(), at: 0, gym: S.gym, items: normG(exIds.map(function (x, k) { var o = { ex: x, sets: [] }; if (gs && gs[k]) { o.g = gs[k]; if (gts && gts[k]) o.gt = gts[k]; } return o; }).filter(function (o) { return EXM[o.ex]; })) };
+    if (CUR.date !== ymd()) CUR.resume = 1;
     saveCur(); render();
   }
-  function ensureCur() { if (!CUR) { CUR = { id: Date.now(), date: ymd(), start: Date.now(), at: 0, gym: S.gym, items: [] }; } }
+  function ensureCur() { if (!CUR) { CUR = { id: Date.now(), date: wDate(), start: Date.now(), at: 0, gym: S.gym, items: [] }; PDATE = ''; if (CUR.date !== ymd()) CUR.resume = 1; } }
   function addExToCur(exId) {
     ensureCur();
     var i = CUR.items.findIndex(function (it) { return it.ex === exId; });
@@ -527,7 +540,7 @@
     CUR.min = Math.min(180, Math.max(1, raw < est ? est : raw)); CUR.kg = myKg();
     var w = CUR;
     w.no = W.filter(function (x) { return x.date === w.date; }).reduce(function (mx, x) { return Math.max(mx, wNo(x)); }, 0) + 1;
-    W.push(w); saveW();
+    W.push(w); W.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.start || 0) - (b.start || 0); }); saveW();
     var ex = w.items.map(function (it) { return it.ex; });
     CUR = null; saveCur(); stopRest(); render();
     owSheet(w, ex);
@@ -924,7 +937,7 @@
     for (var k = 0; k < first.getDay(); k++) h += '<span></span>';
     for (var d = 1; d <= nd; d++) {
       var ds = CALM + '-' + pad(d), c = byD[ds] || 0;
-      h += '<button class="cd' + (c ? ' has' : '') + (ds === today ? ' td' : '') + (!CALSEL && ds === CALD ? ' sel' : '') + (CALSEL && CALSEL[ds] ? ' pick' : '') + '" data-cd="' + ds + '"' + (c ? '' : ' disabled') + '>' + d + (c ? '<i>' + (c > 1 ? c : '') + '</i>' : '') + '</button>';
+      h += '<button class="cd' + (c ? ' has' : '') + (ds === today ? ' td' : '') + (!CALSEL && ds === CALD ? ' sel' : '') + (CALSEL && CALSEL[ds] ? ' pick' : '') + '" data-cd="' + ds + '"' + (c ? ' data-has="1"' : '') + ((CALSEL ? c : ds <= today) ? '' : ' disabled') + '>' + d + (c ? '<i>' + (c > 1 ? c : '') + '</i>' : '') + '</button>';
     }
     h += '</div>';
     /* 날짜 골라 지우기 (10/24 스티브) */
@@ -949,7 +962,7 @@
     h += '</div>';
     /* 목록 */
     var list, ttl;
-    if (CALD) { list = W.filter(function (w) { return w.date === CALD; }).filter(wMatch); ttl = mdw(CALD) + ' 운동 <button class="btn sm" id="calX">✕ 날짜 풀기</button>'; }
+    if (CALD) { list = W.filter(function (w) { return w.date === CALD; }).filter(wMatch); ttl = mdw(CALD) + ' 운동 <button class="btn sm" id="calX">✕ 날짜 풀기</button>'; h += '<button class="btn p w" id="calAdd" style="margin:10px 0 0">➕ ' + mdw(CALD) + ' 운동 추가하기</button>'; }
     else if (CALF.m || CALF.q) { list = fw.slice().reverse(); ttl = CALM.slice(5, 7).replace(/^0/, '') + '월 · 거른 결과 ' + list.length + '회'; }
     else { list = W.slice().reverse(); ttl = '최근 기록 <small>' + W.length + '회 · 날짜를 누르면 그날만</small>'; }
     var cut = !CALD && !CALF.m && !CALF.q && !OWALL ? 5 : 400;
@@ -963,7 +976,7 @@
     function mv(n) { var y = +CALM.slice(0, 4), m = +CALM.slice(5, 7) - 1 + n; var d = new Date(y, m, 1); CALM = d.getFullYear() + '-' + pad(d.getMonth() + 1); CALD = ''; render(); }
     $('calP').onclick = function () { mv(-1); }; $('calN').onclick = function () { mv(1); };
     pg.querySelectorAll('[data-cd]').forEach(function (b) { b.onclick = function () {
-      if (CALSEL) { var d = b.dataset.cd; if (CALSEL[d]) delete CALSEL[d]; else CALSEL[d] = 1; render(); return; }
+      if (CALSEL) { if (!b.dataset.has) return; var d = b.dataset.cd; if (CALSEL[d]) delete CALSEL[d]; else CALSEL[d] = 1; render(); return; }
       CALD = CALD === b.dataset.cd ? '' : b.dataset.cd; OWOPEN = ''; render(); }; });
     if ($('delOn')) $('delOn').onclick = function () { CALSEL = {}; CALD = ''; CALF = { m: '', q: '' }; CALUNDO = null; OWOPEN = ''; render(); };
     if ($('delX')) $('delX').onclick = function () { CALSEL = null; render(); };
@@ -984,6 +997,10 @@
     pg.querySelectorAll('[data-cf]').forEach(function (b) { b.onclick = function () { CALF.m = b.dataset.cf; render(); }; });
     var q = $('calQ'), tmr; q.oninput = function () { clearTimeout(tmr); tmr = setTimeout(function () { CALF.q = q.value.trim(); render(); var q2 = $('calQ'); if (q2) { q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); } }, 350); };
     if ($('calX')) $('calX').onclick = function () { CALD = ''; render(); };
+    if ($('calAdd')) $('calAdd').onclick = function () {   /* 11/28: 지난 날짜(또는 오늘)에 운동 추가 */
+      var d = CALD; if (!d || d > ymd()) return;
+      if (CUR && curSets() && !stale()) { toast('지금 기록 중인 운동이 있어요. 오운완 하거나 지운 뒤 추가해 주세요'); go('wk'); return; }
+      PDATE = d < ymd() ? d : ''; go('wk'); startWorkout([]); if (CUR && CUR.date === d) { openPicker(); toast('📅 ' + mdw(d) + ' 운동으로 기록해요'); } };
     $('csvOut').onclick = exportCSV;
   }
   function bkBanner() {

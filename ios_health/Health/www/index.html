@@ -216,6 +216,13 @@ details summary{cursor:pointer;font-weight:800;color:var(--main2);margin:8px 0}
 .fxs{display:grid;grid-template-columns:22px 1fr 34px 1fr 22px 34px;align-items:center;gap:5px;margin-top:6px}
 .fxs span{font-size:12px;color:var(--dim);text-align:center}.fxs input{width:100%;min-width:0;text-align:center}
 .fxs em{font-style:normal;font-size:12px;color:var(--muted)}.fxs em.bw{grid-column:2/4;text-align:center}
+/* 11/28 지난 날짜 운동 추가 — 날짜 줄 */
+.wdate{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--panel2);border:1px solid transparent;font-size:14px}
+.wdate>span{flex:1;min-width:150px}
+.wdate.past{border-color:var(--gold);background:rgba(255,209,102,.12)}
+.wdate.past b{color:var(--gold)}
+.wdate label{position:relative;overflow:hidden;cursor:pointer}
+.wdate label input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0;margin:0}
 </style>
 </head>
 <body>
